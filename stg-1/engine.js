@@ -535,9 +535,9 @@ function LsrDrw(ctx,wid,ty,cl,X,Y,di,alpha,circle) {
 		ctx.fill();
 		ctx.beginPath();
 		tn == 1 && (ctx.globalAlpha = 0.5);
-		ctx.lineWidth = wid*2;
+		ctx.lineWidth = wid/1.5;
 		ctx.strokeStyle = cl;
-		circle && ctx.arc(X,Y,5,0,Math.PI*2,false);
+		circle && ctx.arc(X,Y,wid,0,Math.PI*2,false);
 		ctx.stroke();
 		ctx.beginPath();
  		ctx.strokeStyle = cl;
