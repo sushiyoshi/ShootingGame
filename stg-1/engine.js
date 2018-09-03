@@ -535,7 +535,7 @@ function LsrDrw(ctx,wid,ty,cl,X,Y,di,alpha,circle) {
 		ctx.fill();
 		ctx.beginPath();
 		tn == 1 && (ctx.globalAlpha = 0.5);
-		ctx.lineWidth = wid/1.5;
+		ctx.lineWidth = wid/1.8;
 		ctx.strokeStyle = cl;
 		circle && ctx.arc(X,Y,wid,0,Math.PI*2,false);
 		ctx.stroke();
@@ -579,8 +579,8 @@ function sleepByPromise(sec) {
 
 function game() {
 
-	add_enemy({X:300,Y:0,dir:[angle(300,0,400,200),90],shooter:[{},{laser:true,count:5,rota:72,shift:50}],speed:[2,0,1],accele:[0.1,0,0.4],changeCond:{cond0:1,x0:400,y0:200,cond1:2,start1:0,goal1:200},type:[0,1,0],down:[10,200],hp:20});
-	add_enemy({X:300,Y:0,dir:[angle(300,0,200,200),90],shooter:[{},{laser:true,count:5,rota:72,shift:50}],speed:[2,0,1],accele:[0.1,0,0.4],changeCond:{cond0:1,x0:200,y0:200,cond1:2,start1:0,goal1:200},type:[0,1,0],down:[10,200],hp:20});
+	add_enemy({X:300,Y:0,color:'#b000a3',dir:[angle(300,0,400,200),90],shooter:[{},{color:'#b000a3',laser:true,count:5,rota:72,shift:50}],speed:[2,0,1],accele:[0.1,0,0.4],changeCond:{cond0:1,x0:400,y0:200,cond1:2,start1:0,goal1:200},type:[0,1,0],down:[10,200],hp:20});
+	add_enemy({X:300,Y:0,color:'#b000a3',dir:[angle(300,0,200,200),90],shooter:[{},{color:'#b000a3',laser:true,count:5,rota:72,shift:50}],speed:[2,0,1],accele:[0.1,0,0.4],changeCond:{cond0:1,x0:200,y0:200,cond1:2,start1:0,goal1:200},type:[0,1,0],down:[10,200],hp:20});
 	add_enemy({X:300,Y:0,color:'#b000a3',dir:[angle(300,0,300,100),90],shooter:[{},{color:'#b000a3',laser:true,shift:50}],speed:[2,0,1],accele:[0.1,0,0.4],changeCond:{cond0:1,x0:300,y0:100,cond1:2,start1:0,goal1:200},type:[0,1,0],down:[10,200],hp:50},2);
 
 	/*
@@ -598,5 +598,4 @@ function game() {
 	add_enemy({X:150,Y:0,shooter:[{count:5,rota:30,st_dir:270,speed:1,accele:1,dir_accele:1}],speed:[2],type:[1],down:[100,100],hp:5},3);
 
 	add_enemy({X:300,Y:0,reverse:2,color:'#b000a3',shooter:[{},{speed:2,accele:0.5,dir_accele:1.0,type:[2,2,2,2,2,2,2],color:'#b000a3',size:30,btype:1,down:20,Addval:300}],speed:[2,0,1],accele:[0.1,0,0.4],changeCond:{cond0:1,x0:300,y0:100,cond1:3,start1:0,goal1:800},type:[0,1,0],down:[250,250],hp:100,size:10},10);
-
-}
+ }
