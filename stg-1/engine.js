@@ -615,7 +615,9 @@ function game() {
 
 	add_enemy({X:300,Y:0,color:'#b000a3',
 		shooter:[[{}],
-		[{reverse:1.5,dir_accele:[0,1.5,0],color:'#b000a3',laser:true,shift:50,rotaRate:40,down:[100,100,10],cycle:3},{rotaRate:10,speed:3,accele:-4,down:30,speed_2:1,accele_2:0.2,type:[1,0],count:5,rota:72,X:450,Y:200,st_dir:rndm(0,360)},{rotaRate:-10,speed:3,accele:-4,down:30,speed_2:1,accele_2:0.2,type:[1,0],count:5,rota:72,X:150,Y:200,st_dir:rndm(0,360)}],
+		[{reverse:1.5,dir_accele:[0,1.5,0],color:'#b000a3',laser:true,shift:50,rotaRate:40,down:[100,100,10],cycle:3},
+		{rotaRate:10,speed:1,accele:2,st_dir:rndm(0,360)},
+		{rotaRate:-10,speed:3,accele:-4,down:30,speed_2:1,accele_2:0.2,type:[1,0],st_dir:rndm(0,360)}],
 		[{}],
 		[{speed:2,accele:0.5,dir_accele:1.0,type:[2,2,2,2,2,2,2],color:'#b000a3',size:30,btype:1,down:20,Addval:300,reverse:1}],
 		[{}]],
