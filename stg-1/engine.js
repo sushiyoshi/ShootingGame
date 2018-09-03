@@ -330,7 +330,7 @@ function special() {
   		if(exData.color_2 !== undefined) exData.color =  exData.color_2;
   		break;
   		case 2:
-  		add(0,{X:exData.X,Y:exData.Y,speed:0,type:[1,0],color:'#b000a3',ad:exData.enId + String(exData.bulletNumber),accele_2:0.2,dir_accele:0.1,color_2:'#516c7f',btype:3,size:1,effect:[1,0]},1,0,rndm(0,360));
+  		add(0,{X:exData.X,Y:exData.Y,speed:0,type:[1,0],color:'#b000a3',ad:exData.enId + String(exData.bulletNumber),accele_2:0.5,dir_accele:0.1,color_2:'#516c7f',btype:3,size:1,effect:[1,0]},1,0,rndm(0,360));
   		exData.down = 20;
   		break;
   	}
@@ -621,6 +621,6 @@ function game() {
 		[{}],
 		[{speed:2,accele:0.5,dir_accele:1.0,type:[2,2,2,2,2,2,2],color:'#b000a3',size:30,btype:1,down:20,Addval:300,reverse:1}],
 		[{}]],
-	speed:[2,0,0,0],accele:[0.1,0,0,0],changeCond:{cond0:1,x0:300,y0:100,cond1:3,hp1:50,cond2:2,start2:0,goal2:50,cond3:3,hp3:10},type:[0,1,0,1,0],down:[[0,0],[35,35],[0,0],[0,250],[0,0]],hp:100,size:10},10);
+	speed:[2,0,0,0],accele:[0.1,0,0,0],changeCond:{cond0:1,x0:300,y0:100,cond1:3,hp1:70,cond2:2,start2:0,goal2:50,cond3:3,hp3:10},type:[0,1,0,1,0],down:[[0,0],[35,35],[0,0],[0,250],[0,0]],hp:100,size:10},10);
 }
 
