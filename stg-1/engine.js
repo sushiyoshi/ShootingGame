@@ -14,6 +14,8 @@ let p_bullet = [];
 let enemy = [];
 let shot = 0;
 let touch;
+let enem_num = 0;
+let deleteAll;
 
 game();
 
@@ -50,11 +52,11 @@ function add(i,object,count,rota,st_dir,ls,shift) {
 	let dt = object;
 	dt.X === undefined && (dt.X = exData.X);
 	dt.Y === undefined && (dt.Y = exData.Y);
-	dt.enId === undefined && (dt.enId = exData.etype);
+	dt.enId === undefined && (dt.enId = exData.enId);
 	st_dir === undefined && (st_dir = 0);
 	shift === undefined && (shift = 0);
 	if(dt.Addval != null && dt.bulletNumber !== undefined) {
-		address[dt.enId + String(dt.bulletNumber)] = dt.Addval;
+		address[dt.enId + '-' + String(dt.bulletNumber)] = dt.Addval;
 			delete dt.Addval;
 	}
 	let direc = st_dir;
@@ -73,7 +75,6 @@ function ex(object,object_2) {
  		let copy;
  		typeof object[k] !== 'object' ? copy = object[k] : copy = Object.assign({}, object[k]);
  		copy !== undefined && (object_2[k] = copy);
- 		//k === 'down' && console.log(object_2[k]);
  	};
  }
 
@@ -164,13 +165,13 @@ function distance(x1,y1,x2,y2) {
  	return Math.sqrt( Math.pow( x2-x1, 2 ) + Math.pow( y2-y1, 2 ) ) 
 }
 
-function condition(i,object) {
+function condition(object) {
 	switch(object.deletion) {
  		case 1:
  		return distance(object.X,object.Y,object.goalX[2],object.goalY[3]) <= 10;
  		break;
  		case 2:
- 		return object.down[object['down'].length - 1] == 0;
+ 		return object.down[2] == 0;
  		default:
  		return object.X > canvas.width || object.X < 0 || object.Y < 0 || object.Y > canvas.height;
  		break;
@@ -220,11 +221,14 @@ function player(ctx) {
  	pspY = (2-input_key_buffer[16])*(input_key_buffer[40] - input_key_buffer[38]);
  	pX += pspX;
     pY += pspY;
+    pX > canvas.width && (pX = canvas.width);
+    pX < 0 && (pX = 0);
+    pY < 0 && (pY = 0);
+    pY > canvas.height && (pY = canvas.height);
     shot--;
     if(input_key_buffer[90] && shot < 0) {
         Shot(pX,pY);
         shot = 10;
-
     }
     ctx.beginPath();
     ctx.fillStyle = '#ffffff';
@@ -249,7 +253,8 @@ function en_bullet(ctx) {
            down:-1, //typeの値を変えるタイミング
            deletion:0, //削除される条件
            type_number:0,
-           effect:[0]
+           effect:[0],
+           delete_:false
         }
     	//デフォルト値更新
     	ex(dta[i],exData);
@@ -264,8 +269,7 @@ function en_bullet(ctx) {
 	    } else { eff(ctx); }
 	    //データ更新
 	    dta[i] = exData;
-
-	    if(condition(i,exData)) {
+	    if(condition(i,exData) || (exData.delete_ && deleteAll == exData.enId)) {
 	       	dta.splice(i,1);
 	        length--;
 	        i--;
@@ -330,7 +334,7 @@ function special() {
   		if(exData.color_2 !== undefined) exData.color =  exData.color_2;
   		break;
   		case 2:
-  		add(0,{X:exData.X,Y:exData.Y,speed:0,type:[1,0],color:'#b000a3',ad:exData.enId + String(exData.bulletNumber),accele_2:0.5,dir_accele:0.1,color_2:'#516c7f',btype:3,size:1,effect:[1,0]},1,0,rndm(0,360));
+  		add(0,{X:exData.X,Y:exData.Y,speed:0,type:[1,0],color:'#b000a3',ad:exData.enId + '-' + String(exData.bulletNumber),accele_2:0.5,dir_accele:0.1,color_2:'#516c7f',btype:3,size:1,effect:[1,0]},1,0,rndm(0,360));
   		exData.down = 20;
   		break;
   	}
@@ -338,6 +342,7 @@ function special() {
 }
 function enemyAll(ctx) {
     let length = enemy.length;
+    let delete_ = false;
     for(let i = 0; i < length; i++) {
     	exData = {
            X:0, //x座標
@@ -349,15 +354,15 @@ function enemyAll(ctx) {
            type:[0], //挙動の種類
            color:'#ffffff', //色
            size:2, //大きさ
-           etype:'ad', //見た目
            edir:0,//見た目(向き)
            down:[-1,0], //typeの値を変えるタイミング
            deletion:0, //削除される条件
            bulletNumber:0,
            typeNumber:0,
            hp:20,
-           collision:10,
-           changeCond:{cond0:1,x0:exData.X,y0:500}
+           collision:20,
+           changeCond:{cond0:0},
+           chase:false
         }
     	ex(enemy[i],exData);
     	tn = exData.typeNumber;
@@ -365,25 +370,34 @@ function enemyAll(ctx) {
     	exData.speed[tn] +=  exData.accele[tn] / 100;
     	exData.dir[tn] +=  exData.dir_accele[tn] /5;
        	exData.down[tn][0]--;
+       	(exData['changeCond'][`chase${tn}`]) && (exData.dir[tn] = angle(exData.X,exData.Y,pX,pY));
        	move(exData.speed[tn],exData.dir[tn],exData);
        	en_anim(exData.etype,exData.speed[tn]);
        	if(changeCondition(exData['changeCond'][`cond${tn}`])) {
-       		tn++;
-       		arrayUpdate(exData.dir,tn);
-       		arrayUpdate(exData.speed,tn);
-       		arrayUpdate(exData.accele,tn);
-       		arrayUpdate(exData.dir_accele,tn);
+       		exData['changeCond'][`delAll${tn}`] && (deleteAll = exData.enId);
+       		exData['changeCond'][`color${tn}`] !== undefined && (exData.color = exData['changeCond'][`color${tn}`]);
+       		if(exData['changeCond'][`cond${tn+1}`] === undefined) {
+       			delete_ = true;
+       		} else {
+       			tn++;
+	       		arrayUpdate(exData.dir,tn);
+	       		arrayUpdate(exData.speed,tn);
+	       		arrayUpdate(exData.accele,tn);
+	       		arrayUpdate(exData.dir_accele,tn);
+	       	}
 
        	}
        	exData.typeNumber = tn;
        	(exData.down[tn][0] == 0) && en_special(exData.type[tn],exData.shooter[tn]);
        	collider();
-       	if(exData.hp < 0) {
+       	enemy[i] = exData;
+       	if(exData.hp < 0 || delete_) {
+       		exData.hp < 0 && (deleteAll = exData.enId);
        		enemy.splice(i,1);
 			length--;
 			i--;
+			delete_ = false;
        	}
-    	enemy[i] = exData;
     }
 }
 
@@ -425,6 +439,7 @@ function en_special(num,dt) {
 			object.count === undefined  && (object.count = 10);
 			object.rota === undefined && (object.rota = 36);
 			object.st_dir === undefined && (object.st_dir = exData.dir[tn]);
+			object.zikimuke && (object.st_dir = angle(exData.X,exData.Y,pX,pY));
 			object.rotaRate !== undefined && (object.st_dir += object.rotaRate);
 			object.cycle === undefined && (object.cycle = 1);
 			object.laser === undefined &&  (object.laser = false);
@@ -432,7 +447,7 @@ function en_special(num,dt) {
 				object.reverse *= -1; 
 				object.laser ? object.dir_accele[1] = object.reverse : object.dir_accele = object.reverse;
 			}
-			exData.bulletNumber % object.cycle == 0 && add(0,{color:object['color'], speed:object['speed'],speed_2:object['speed_2'], accele:object['accele'],accele_2:object['accele_2'],dir_accele_2:object['dir_accele_2'], dir_accele:object['dir_accele'], down:object['down'], size:object['size'], type:object['type'], btype:object['btype'], bulletNumber:exData.bulletNumber, Addval:object['Addval'],width:object['width'],X:object['X'],Y:object['Y']}, object['count'], object['rota'], object['st_dir'],object['laser'],object['shift']);
+			exData.bulletNumber % object.cycle == 0 && add(0,{chase:object['chase'],delete_:object['delete_'],enId:object['enId'],color:object['color'], speed:object['speed'],speed_2:object['speed_2'], accele:object['accele'],accele_2:object['accele_2'],dir_accele_2:object['dir_accele_2'], dir_accele:object['dir_accele'], down:object['down'], size:object['size'], type:object['type'], btype:object['btype'], bulletNumber:exData.bulletNumber, Addval:object['Addval'],width:object['width'],X:object['X'],Y:object['Y']}, object['count'], object['rota'], object['st_dir'],object['laser'],object['shift']);
 		});
 		break;
 	}
@@ -454,16 +469,23 @@ function changeCondition(num) {
 
 		case 3:
 		return object[`hp${tn}`] > exData.hp;
+		break;
 
-
+		case 4: 
+		return Math.abs(object[`x${tn}`]- exData.X) < exData.speed[tn]*1.3 || Math.abs(object[`y${tn}`]- exData.Y) < 5;
+		break;
 		default:
-		return exData.down[tn][0] == 0;
+		return exData.X > canvas.width || exData.X < 0 || exData.Y < 0 || exData.Y > canvas.height;
 		break;
 	}
 }
 
 async function add_enemy(object,sec = 0){
 	await sleepByPromise(sec);
+	enem_num++;
+	if(object.etype === undefined) object.etype = 'ad';
+	object.enId = object.etype + '-' + enem_num;
+	//console.log(object.enId);
 	enemy.push(object); 
 }
 
@@ -495,13 +517,14 @@ function addEffect() {
 }
 
 function laserAll(ctx) {
-	let length = laser.length;
-
+  	let length = laser.length;
   	for(let i = 0; i < length; i++) {
 		exData = {
 			X:0,
 			Y:0,
 			dir:0,
+			speed:0,
+			dir_2:90,
 			dir_accele:[0,0,0],
 			dir_accele_2:[0,0,0],
 			width:[8,15,8],
@@ -513,10 +536,12 @@ function laserAll(ctx) {
 			typeNumber:0,
 			deletion:2,
 			down:[100,100,10],
-			circle:true
+			circle:true,
+			delete_:false
 		}
 		ex(laser[i],exData);
 		tn = exData.typeNumber;
+		move(exData.speed,exData.dir_2,exData);
 		exData.width_2 = exData.width[tn] - exData.width_3;
 		exData.width_3 += exData.width_2/5;
 		exData.dir += exData.dir_accele[tn]/5;
@@ -526,17 +551,20 @@ function laserAll(ctx) {
 		if(tn == 1){colid(touch,ctx); exData.alpha = 1;}
 		tn == 2 && (exData.alpha -= 0.1);
 		exData.down[tn]--;
-		if(condition(i,exData)) {
+		if(condition(exData)) {
 	       	laser.splice(i,1);
 	        length--;
 	        i--;
+
 	    }
 		exData.down[tn] == 0 && tn++;
+		if(exData.delete_ && deleteAll == exData.enId) { tn = 2; exData.alpha = 1;}
 		exData.typeNumber = tn;
 		laser[i] = exData;
 		
 
 	}
+	deleteAll = '';
 }
 
 function LsrDrw(ctx,wid,ty,cl,X,Y,di,alpha,circle) {
@@ -559,7 +587,7 @@ function LsrDrw(ctx,wid,ty,cl,X,Y,di,alpha,circle) {
  		let obj = {X:exData.X,Y:exData.Y};
  		move(10,exData.dir,obj);
  		ctx.moveTo(obj.X,obj.Y);
- 		ctx.lineTo(obj.X+ Math.cos(rad(di))*1000,obj.X + Math.sin(rad(di))*1000);
+ 		ctx.lineTo(obj.X+ Math.cos(rad(di))*1000,obj.Y + Math.sin(rad(di))*1000);
  		ctx.stroke();
  		ctx.globalAlpha = alpha;
  		ctx.strokeStyle = '#ffffff';
@@ -592,35 +620,55 @@ function sleepByPromise(sec) {
 
 
 function game() {
-
-	add_enemy({X:300,Y:0,color:'#b000a3',dir:[angle(300,0,400,200),90],shooter:[[{}],[{dir_accele:[0,1.5,0],color:'#b000a3',laser:true,count:5,rota:72,shift:50}]],speed:[2,0,1],accele:[0.1,0,0.4],changeCond:{cond0:1,x0:400,y0:200,cond1:2,start1:0,goal1:200},type:[0,1,0],down:[[0,0],[10,200],[0,0]],hp:20});
 	
-	add_enemy({X:300,Y:0,color:'#b000a3',dir:[angle(300,0,200,200),90],shooter:[[{}],[{dir_accele:[0,-1.5,0],color:'#b000a3',laser:true,count:5,rota:72,shift:50}]],speed:[2,0,1],accele:[0.1,0,0.4],changeCond:{cond0:1,x0:200,y0:200,cond1:2,start1:0,goal1:200},type:[0,1,0],down:[[0,0],[10,200],[0,0]],hp:20});
-	add_enemy({X:300,Y:0,color:'#b000a3',dir:[angle(300,0,300,100),90],shooter:[[{}],[{color:'#b000a3',laser:true,shift:50}]],speed:[2,0,1],accele:[0.1,0,0.4],changeCond:{cond0:1,x0:300,y0:100,cond1:2,start1:0,goal1:200},type:[0,1,0],down:[[0,0],[10,200],[0,0]],hp:50},2);
+	add_enemy({X:300,Y:0,color:'#b000a3',dir:[angle(300,0,400,200),90],shooter:[[{}],[{down:[160,100,10],dir_accele:[0,1.5,0],color:'#b000a3',laser:true,count:5,rota:72,shift:50}]],speed:[2,0,1],accele:[0.1,0,0.4],changeCond:{cond0:1,x0:400,y0:200,cond1:2,start1:0,goal1:200,cond2:4,y2:500},type:[0,1,0],down:[[0,0],[10,200],[0,0]],hp:10},1);		
+	
+	add_enemy({X:300,Y:0,color:'#b000a3',dir:[angle(300,0,200,200),90],shooter:[[{}],[{down:[160,100,10],dir_accele:[0,-1.5,0],color:'#b000a3',laser:true,count:5,rota:72,shift:50}]],speed:[2,0,1],accele:[0.1,0,0.4],changeCond:{cond0:1,x0:200,y0:200,cond1:2,start1:0,goal1:200,cond2:4,y2:500},type:[0,1,0],down:[[0,0],[10,200],[0,0]],hp:10},1);
 
-	/*
-	for(let i; i <= 3; i++) {
-		console.log(i);
-		add_enemy({X:450,Y:0,shooter:[{count:5,rota:30,st_dir:135,speed:1,accele:1,dir_accele:1}],speed:[2],type:[1],down:[100,100],hp:5},i);
-		add_enemy({X:150,Y:0,shooter:[{count:5,rota:30,st_dir:270,speed:1,accele:1,dir_accele:-1}],speed:[2],type:[1],down:[100,100],hp:5},i);
+	add_enemy({X:300,Y:0,size:5,color:'#b000a3',dir:[angle(300,0,300,100),90],shooter:[[{}],[{color:'#b000a3',laser:true,shift:60}]],speed:[2,0,1],accele:[0.1,0,0.4],changeCond:{cond0:1,x0:300,y0:100,cond1:2,start1:0,goal1:200,cond2:4,y2:500},type:[0,1,0],down:[[0,0],[10,200],[0,0]],hp:20},3);
 
-	}*/
 	add_enemy({X:450,Y:0,shooter:[[{count:5,rota:30,st_dir:135,speed:1,accele:1,dir_accele:1}]],speed:[2],type:[1],down:[[100,100]],hp:5},1);
 	add_enemy({X:150,Y:0,shooter:[[{count:5,rota:30,st_dir:270,speed:1,accele:1,dir_accele:1}]],speed:[2],type:[1],down:[[100,100]],hp:5},1);
+
 	add_enemy({X:450,Y:0,shooter:[[{count:5,rota:30,st_dir:135,speed:1,accele:1,dir_accele:1}]],speed:[2],type:[1],down:[[100,100]],hp:5},2);
 	add_enemy({X:150,Y:0,shooter:[[{count:5,rota:30,st_dir:270,speed:1,accele:1,dir_accele:1}]],speed:[2],type:[1],down:[[100,100]],hp:5},2);
+
 	add_enemy({X:450,Y:0,shooter:[[{count:5,rota:30,st_dir:135,speed:1,accele:1,dir_accele:1}]],speed:[2],type:[1],down:[[100,100]],hp:5},3);
 	add_enemy({X:150,Y:0,shooter:[[{count:5,rota:30,st_dir:270,speed:1,accele:1,dir_accele:1}]],speed:[2],type:[1],down:[[100,100]],hp:5},3);
+
+	add_enemy({X:250,Y:0,shooter:[[{count:1,st_dir:0,speed:1,laser:true,down:[1,460,10],shift:30,delete_:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:[1,1,0.5,4],accele:[0,0,0.15,0.1],type:[1,0,1,0],down:[[10,30],[0,0],[80,80],[0,0]],changeCond:{cond0:2,start0:0,goal0:25,cond1:3,hp1:19,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,start2:0,goal2:500,cond3:0},hp:20},6);
+	add_enemy({X:350,Y:0,shooter:[[{count:1,st_dir:180,speed:1,laser:true,down:[1,460,10],shift:30,delete_:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:[1,1,0.5,4],accele:[0,0,0.15,0.1],type:[1,0,1,0],down:[[10,30],[0,0],[80,80],[0,0]],changeCond:{cond0:2,start0:0,goal0:25,cond1:3,hp1:19,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,start2:0,goal2:500,cond3:0},hp:20},8);
+	add_enemy({X:200,Y:0,shooter:[[{count:1,st_dir:0,speed:1,laser:true,down:[1,460,10],shift:30,delete_:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:[1,1,0.5,4],accele:[0,0,0.15,0.1],type:[1,0,1,0],down:[[10,30],[0,0],[80,80],[0,0]],changeCond:{cond0:2,start0:0,goal0:25,cond1:3,hp1:19,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,start2:0,goal2:500,cond3:0},hp:20},10);
+	add_enemy({X:400,Y:0,shooter:[[{count:1,st_dir:180,speed:1,laser:true,down:[1,460,10],shift:30,delete_:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:[1,1,0.5,4],accele:[0,0,0.15,0.1],type:[1,0,1,0],down:[[10,30],[0,0],[80,80],[0,0]],changeCond:{cond0:2,start0:0,goal0:25,cond1:3,hp1:19,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,start2:0,goal2:500,cond3:0},hp:20},12);
+	add_enemy({X:200,Y:0,shooter:[[{count:1,st_dir:0,speed:1,laser:true,down:[1,460,10],shift:30,delete_:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:[1,1,0.5,4],accele:[0,0,0.15,0.1],type:[1,0,1,0],down:[[10,30],[0,0],[80,80],[0,0]],changeCond:{cond0:2,start0:0,goal0:25,cond1:3,hp1:19,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,start2:0,goal2:500,cond3:0},hp:20},14);
+	add_enemy({X:400,Y:0,shooter:[[{count:1,st_dir:180,speed:1,laser:true,down:[1,460,10],shift:30,delete_:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:[1,1,0.5,4],accele:[0,0,0.15,0.1],type:[1,0,1,0],down:[[10,30],[0,0],[80,80],[0,0]],changeCond:{cond0:2,start0:0,goal0:25,cond1:3,hp1:19,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,start2:0,goal2:500,cond3:0},hp:20},16);
+	add_enemy({X:200,Y:0,shooter:[[{count:1,st_dir:0,speed:1,laser:true,down:[1,460,10],shift:30,delete_:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:[1,1,0.5,4],accele:[0,0,0.15,0.1],type:[1,0,1,0],down:[[10,30],[0,0],[80,80],[0,0]],changeCond:{cond0:2,start0:0,goal0:25,cond1:3,hp1:19,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,start2:0,goal2:500,cond3:0},hp:20},18);
+	add_enemy({X:400,Y:0,shooter:[[{count:1,st_dir:180,speed:1,laser:true,down:[1,460,10],shift:30,delete_:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:[1,1,0.5,4],accele:[0,0,0.15,0.1],type:[1,0,1,0],down:[[10,30],[0,0],[80,80],[0,0]],changeCond:{cond0:2,start0:0,goal0:25,cond1:3,hp1:19,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,start2:0,goal2:500,cond3:0},hp:20},20);
 	
+	
+	add_enemy({X:0,Y:100,dir:[0],shooter:[[{count:5,rota:10,speed:1,accele:0.1,zikimuke:true,rotaRate:- 20}]],speed:[2],type:[1],down:[[100,100]],hp:5},6);
+	add_enemy({X:0,Y:100,dir:[0],shooter:[[{count:5,rota:10,speed:1,accele:0.1,zikimuke:true,rotaRate:- 20}]],speed:[2],type:[1],down:[[100,100]],hp:5},8);
+	add_enemy({X:0,Y:100,dir:[0],shooter:[[{count:5,rota:10,speed:1,accele:0.1,zikimuke:true,rotaRate:- 20}]],speed:[2],type:[1],down:[[100,100]],hp:5},10);
+	add_enemy({X:0,Y:100,dir:[0],shooter:[[{count:5,rota:10,speed:1,accele:0.1,zikimuke:true,rotaRate:- 20}]],speed:[2],type:[1],down:[[100,100]],hp:5},12);
+	add_enemy({X:0,Y:100,dir:[0],shooter:[[{count:5,rota:10,speed:1,accele:0.1,zikimuke:true,rotaRate:- 20}]],speed:[2],type:[1],down:[[100,100]],hp:5},14);
+	add_enemy({X:0,Y:100,dir:[0],shooter:[[{count:5,rota:10,speed:1,accele:0.1,zikimuke:true,rotaRate:- 20}]],speed:[2],type:[1],down:[[100,100]],hp:5},16);
+	add_enemy({X:0,Y:100,dir:[0],shooter:[[{count:5,rota:10,speed:1,accele:0.1,zikimuke:true,rotaRate:- 20}]],speed:[2],type:[1],down:[[100,100]],hp:5},18);
+	add_enemy({X:0,Y:100,dir:[0],shooter:[[{count:5,rota:10,speed:1,accele:0.1,zikimuke:true,rotaRate:- 20}]],speed:[2],type:[1],down:[[100,100]],hp:5},20);
+	add_enemy({X:0,Y:100,dir:[0],shooter:[[{count:5,rota:10,speed:1,accele:0.1,zikimuke:true,rotaRate:- 20}]],speed:[2],type:[1],down:[[100,100]],hp:5},22);
+	add_enemy({X:0,Y:100,dir:[0],shooter:[[{count:5,rota:10,speed:1,accele:0.1,zikimuke:true,rotaRate:- 20}]],speed:[2],type:[1],down:[[100,100]],hp:5},24);
+
+
+
 
 	add_enemy({X:300,Y:0,color:'#b000a3',
 		shooter:[[{}],
-		[{reverse:1.5,dir_accele:[0,1.5,0],color:'#b000a3',laser:true,shift:50,rotaRate:40,down:[100,100,10],cycle:3},
+		[{reverse:1.5,dir_accele:[0,1.5,0],color:'#b000a3',laser:true,shift:50,rotaRate:40,down:[100,100,10],cycle:3,delete_:true},
 		{rotaRate:10,speed:1,accele:2,st_dir:rndm(0,360)},
 		{rotaRate:-10,speed:3,accele:-4,down:30,speed_2:1,accele_2:0.2,type:[1,0],st_dir:rndm(0,360)}],
 		[{}],
 		[{speed:2,accele:0.5,dir_accele:1.0,type:[2,2,2,2,2,2,2],color:'#b000a3',size:30,btype:1,down:20,Addval:300,reverse:1}],
 		[{}]],
-	speed:[2,0,0,0],accele:[0.1,0,0,0],changeCond:{cond0:1,x0:300,y0:100,cond1:3,hp1:70,cond2:2,start2:0,goal2:50,cond3:3,hp3:10},type:[0,1,0,1,0],down:[[0,0],[35,35],[0,0],[0,250],[0,0]],hp:100,size:10},10);
-}
+	speed:[2,0,0,0],accele:[0.1,0,0,0],changeCond:{cond0:1,x0:300,y0:100,cond1:3,hp1:70,delAll1:true,cond2:2,start2:0,goal2:50,cond3:3,hp3:10},type:[0,1,0,1,0],down:[[0,0],[35,35],[0,0],[0,250],[0,0]],hp:100,size:10},35);
+	
+}	
 
