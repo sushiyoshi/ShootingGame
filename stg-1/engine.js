@@ -551,16 +551,17 @@ function laserAll(ctx) {
 		if(tn == 1){colid(touch,ctx); exData.alpha = 1;}
 		tn == 2 && (exData.alpha -= 0.1);
 		exData.down[tn]--;
+		exData.down[tn] == 0 && tn++;
+		exData.typeNumber = tn;
+		if(exData.delete_ && deleteAll == exData.enId) { exData.typeNumber = 2; exData.alpha = 1;}
+		laser[i] = exData;
+
 		if(condition(exData)) {
 	       	laser.splice(i,1);
 	        length--;
 	        i--;
 
 	    }
-		exData.down[tn] == 0 && tn++;
-		if(exData.delete_ && deleteAll == exData.enId) { tn = 2; exData.alpha = 1;}
-		exData.typeNumber = tn;
-		laser[i] = exData;
 		
 
 	}
@@ -607,7 +608,7 @@ function colid(bool,ctx) {
 	if(bool) {
     	//エラーがでる
     	//const audio = document.getElementById("audio"); audio.play();
-    	console.log("touch");
+    	//console.log("touch");
     	ctx.beginPath();
     	ctx.fillStyle = '#b000a3';
     	ctx.arc(pX,pY,5,0,Math.PI*2,false);
@@ -621,11 +622,11 @@ function sleepByPromise(sec) {
 
 function game() {
 	
-	add_enemy({X:300,Y:0,color:'#b000a3',dir:[angle(300,0,400,200),90],shooter:[[{}],[{down:[160,100,10],dir_accele:[0,1.5,0],color:'#b000a3',laser:true,count:5,rota:72,shift:50}]],speed:[2,0,1],accele:[0.1,0,0.4],changeCond:{cond0:1,x0:400,y0:200,cond1:2,start1:0,goal1:200,cond2:4,y2:500},type:[0,1,0],down:[[0,0],[10,200],[0,0]],hp:10},1);		
+	add_enemy({X:300,Y:0,color:'#b000a3',dir:[angle(300,0,400,200),90],shooter:[[{}],[{delete_:true,down:[160,100,10],dir_accele:[0,1.5,0],color:'#b000a3',laser:true,count:5,rota:72,shift:50}]],speed:[2,0,1],accele:[0.1,0,0.4],changeCond:{cond0:1,x0:400,y0:200,cond1:2,start1:0,goal1:200,cond2:4,y2:500},type:[0,1,0],down:[[0,0],[10,200],[0,0]],hp:10},1);		
 	
-	add_enemy({X:300,Y:0,color:'#b000a3',dir:[angle(300,0,200,200),90],shooter:[[{}],[{down:[160,100,10],dir_accele:[0,-1.5,0],color:'#b000a3',laser:true,count:5,rota:72,shift:50}]],speed:[2,0,1],accele:[0.1,0,0.4],changeCond:{cond0:1,x0:200,y0:200,cond1:2,start1:0,goal1:200,cond2:4,y2:500},type:[0,1,0],down:[[0,0],[10,200],[0,0]],hp:10},1);
+	add_enemy({X:300,Y:0,color:'#b000a3',dir:[angle(300,0,200,200),90],shooter:[[{}],[{delete_:true,down:[160,100,10],dir_accele:[0,-1.5,0],color:'#b000a3',laser:true,count:5,rota:72,shift:50}]],speed:[2,0,1],accele:[0.1,0,0.4],changeCond:{cond0:1,x0:200,y0:200,cond1:2,start1:0,goal1:200,cond2:4,y2:500},type:[0,1,0],down:[[0,0],[10,200],[0,0]],hp:10},1);
 
-	add_enemy({X:300,Y:0,size:5,color:'#b000a3',dir:[angle(300,0,300,100),90],shooter:[[{}],[{color:'#b000a3',laser:true,shift:60}]],speed:[2,0,1],accele:[0.1,0,0.4],changeCond:{cond0:1,x0:300,y0:100,cond1:2,start1:0,goal1:200,cond2:4,y2:500},type:[0,1,0],down:[[0,0],[10,200],[0,0]],hp:20},3);
+	add_enemy({X:300,Y:0,size:5,color:'#b000a3',dir:[angle(300,0,300,100),90],shooter:[[{}],[{delete_:true,color:'#b000a3',laser:true,shift:60}]],speed:[2,0,1],accele:[0.1,0,0.4],changeCond:{cond0:1,x0:300,y0:100,cond1:2,start1:0,goal1:200,cond2:4,y2:500},type:[0,1,0],down:[[0,0],[10,200],[0,0]],hp:20},3);
 
 	add_enemy({X:450,Y:0,shooter:[[{count:5,rota:30,st_dir:135,speed:1,accele:1,dir_accele:1}]],speed:[2],type:[1],down:[[100,100]],hp:5},1);
 	add_enemy({X:150,Y:0,shooter:[[{count:5,rota:30,st_dir:270,speed:1,accele:1,dir_accele:1}]],speed:[2],type:[1],down:[[100,100]],hp:5},1);
@@ -636,7 +637,6 @@ function game() {
 	add_enemy({X:450,Y:0,shooter:[[{count:5,rota:30,st_dir:135,speed:1,accele:1,dir_accele:1}]],speed:[2],type:[1],down:[[100,100]],hp:5},3);
 	add_enemy({X:150,Y:0,shooter:[[{count:5,rota:30,st_dir:270,speed:1,accele:1,dir_accele:1}]],speed:[2],type:[1],down:[[100,100]],hp:5},3);
 
-	add_enemy({X:250,Y:0,shooter:[[{count:1,st_dir:0,speed:1,laser:true,down:[1,460,10],shift:30,delete_:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:[1,1,0.5,4],accele:[0,0,0.15,0.1],type:[1,0,1,0],down:[[10,30],[0,0],[80,80],[0,0]],changeCond:{cond0:2,start0:0,goal0:25,cond1:3,hp1:19,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,start2:0,goal2:500,cond3:0},hp:20},6);
 	add_enemy({X:350,Y:0,shooter:[[{count:1,st_dir:180,speed:1,laser:true,down:[1,460,10],shift:30,delete_:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:[1,1,0.5,4],accele:[0,0,0.15,0.1],type:[1,0,1,0],down:[[10,30],[0,0],[80,80],[0,0]],changeCond:{cond0:2,start0:0,goal0:25,cond1:3,hp1:19,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,start2:0,goal2:500,cond3:0},hp:20},8);
 	add_enemy({X:200,Y:0,shooter:[[{count:1,st_dir:0,speed:1,laser:true,down:[1,460,10],shift:30,delete_:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:[1,1,0.5,4],accele:[0,0,0.15,0.1],type:[1,0,1,0],down:[[10,30],[0,0],[80,80],[0,0]],changeCond:{cond0:2,start0:0,goal0:25,cond1:3,hp1:19,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,start2:0,goal2:500,cond3:0},hp:20},10);
 	add_enemy({X:400,Y:0,shooter:[[{count:1,st_dir:180,speed:1,laser:true,down:[1,460,10],shift:30,delete_:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:[1,1,0.5,4],accele:[0,0,0.15,0.1],type:[1,0,1,0],down:[[10,30],[0,0],[80,80],[0,0]],changeCond:{cond0:2,start0:0,goal0:25,cond1:3,hp1:19,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,start2:0,goal2:500,cond3:0},hp:20},12);
@@ -644,9 +644,9 @@ function game() {
 	add_enemy({X:400,Y:0,shooter:[[{count:1,st_dir:180,speed:1,laser:true,down:[1,460,10],shift:30,delete_:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:[1,1,0.5,4],accele:[0,0,0.15,0.1],type:[1,0,1,0],down:[[10,30],[0,0],[80,80],[0,0]],changeCond:{cond0:2,start0:0,goal0:25,cond1:3,hp1:19,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,start2:0,goal2:500,cond3:0},hp:20},16);
 	add_enemy({X:200,Y:0,shooter:[[{count:1,st_dir:0,speed:1,laser:true,down:[1,460,10],shift:30,delete_:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:[1,1,0.5,4],accele:[0,0,0.15,0.1],type:[1,0,1,0],down:[[10,30],[0,0],[80,80],[0,0]],changeCond:{cond0:2,start0:0,goal0:25,cond1:3,hp1:19,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,start2:0,goal2:500,cond3:0},hp:20},18);
 	add_enemy({X:400,Y:0,shooter:[[{count:1,st_dir:180,speed:1,laser:true,down:[1,460,10],shift:30,delete_:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:[1,1,0.5,4],accele:[0,0,0.15,0.1],type:[1,0,1,0],down:[[10,30],[0,0],[80,80],[0,0]],changeCond:{cond0:2,start0:0,goal0:25,cond1:3,hp1:19,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,start2:0,goal2:500,cond3:0},hp:20},20);
+	add_enemy({X:250,Y:0,shooter:[[{count:1,st_dir:0,speed:1,laser:true,down:[1,460,10],shift:30,delete_:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:[1,1,0.5,4],accele:[0,0,0.15,0.1],type:[1,0,1,0],down:[[10,30],[0,0],[80,80],[0,0]],changeCond:{cond0:2,start0:0,goal0:25,cond1:3,hp1:19,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,start2:0,goal2:500,cond3:0},hp:20},22);
 	
 	
-	add_enemy({X:0,Y:100,dir:[0],shooter:[[{count:5,rota:10,speed:1,accele:0.1,zikimuke:true,rotaRate:- 20}]],speed:[2],type:[1],down:[[100,100]],hp:5},6);
 	add_enemy({X:0,Y:100,dir:[0],shooter:[[{count:5,rota:10,speed:1,accele:0.1,zikimuke:true,rotaRate:- 20}]],speed:[2],type:[1],down:[[100,100]],hp:5},8);
 	add_enemy({X:0,Y:100,dir:[0],shooter:[[{count:5,rota:10,speed:1,accele:0.1,zikimuke:true,rotaRate:- 20}]],speed:[2],type:[1],down:[[100,100]],hp:5},10);
 	add_enemy({X:0,Y:100,dir:[0],shooter:[[{count:5,rota:10,speed:1,accele:0.1,zikimuke:true,rotaRate:- 20}]],speed:[2],type:[1],down:[[100,100]],hp:5},12);
@@ -668,7 +668,6 @@ function game() {
 		[{}],
 		[{speed:2,accele:0.5,dir_accele:1.0,type:[2,2,2,2,2,2,2],color:'#b000a3',size:30,btype:1,down:20,Addval:300,reverse:1}],
 		[{}]],
-	speed:[2,0,0,0],accele:[0.1,0,0,0],changeCond:{cond0:1,x0:300,y0:100,cond1:3,hp1:70,delAll1:true,cond2:2,start2:0,goal2:50,cond3:3,hp3:10},type:[0,1,0,1,0],down:[[0,0],[35,35],[0,0],[0,250],[0,0]],hp:100,size:10},35);
+	speed:[2,0,0,0],accele:[0.1,0,0,0],changeCond:{cond0:1,x0:300,y0:100,cond1:3,hp1:70,delAll1:true,cond2:2,start2:0,goal2:50,cond3:3,hp3:10},type:[0,1,0,1,0],down:[[0,0],[35,35],[0,0],[0,250],[0,0]],hp:150,size:10},35);
 	
 }	
-
