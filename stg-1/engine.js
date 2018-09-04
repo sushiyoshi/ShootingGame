@@ -231,9 +231,10 @@ function player(ctx) {
         shot = 10;
     }
     ctx.beginPath();
-    ctx.fillStyle = '#ffffff';
-    ctx.arc(pX,pY,5,0,Math.PI*2,false);
-    ctx.fill();
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 5;
+    ctx.arc(pX,pY,10,0,Math.PI*2,false);
+    ctx.stroke();
 }
 
 
