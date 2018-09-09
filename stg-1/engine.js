@@ -31,6 +31,7 @@ var all = function() {
 		pl_bullet(ctx);
 		enemyAll(ctx);
 		laserAll(ctx);
+		effectAll(ctx);
 	}
 };
 
@@ -187,6 +188,7 @@ function shinsu(num) {
 		b = a % 16;
 		a = (a - b) / 16;
 		result += array[b];
+		console.log(a);
 	}
 
 	result = rev(result);
@@ -335,7 +337,7 @@ function special() {
   		if(exData.color_2 !== undefined) exData.color =  exData.color_2;
   		break;
   		case 2:
-  		add(0,{X:exData.X,Y:exData.Y,speed:0,type:[1,0],color:'#b000a3',ad:exData.enId + '-' + String(exData.bulletNumber),accele_2:0.5,dir_accele:0.1,color_2:'#516c7f',btype:3,size:1,effect:[1,0]},1,0,rndm(0,360));
+  		add(0,{delete_:true,X:exData.X,Y:exData.Y,speed:0,type:[1,0],color:'#b000a3',ad:exData.enId + '-' + String(exData.bulletNumber),accele_2:0.5,dir_accele:0.1,color_2:'#516c7f',btype:3,size:1,effect:[1,0]},1,0,rndm(0,360));
   		exData.down = 20;
   		break;
   	}
@@ -393,6 +395,11 @@ function enemyAll(ctx) {
        	collider();
        	enemy[i] = exData;
        	if(exData.hp < 0 || delete_) {
+       		if(exData.hp < 0) {
+       			addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*10],width:[300,0],down:[1,50],color:exData.color,type:1,dir:exData.edir});
+       			addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*20],width:[500,0],down:[1,50],color:exData.color,type:1,dir:0});
+       			//addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*15],width:[200,0],down:[1,50],color:exData.color});
+       		}      		
        		exData.hp < 0 && (deleteAll = exData.enId);
        		enemy.splice(i,1);
 			length--;
@@ -498,25 +505,85 @@ function collider() {
 	let length = p_bullet.length;
   	for(let i = 0; i < length; i++) distance(exData.X,exData.Y,p_bullet[i]['X'],p_bullet[i]['Y']) < exData.collision && exData.hp--;
 }
-function effectAll() {
-	exData = {
-		X:0,
-		Y:0,
-		dir:0,
-		speed:0,
-		size:0,
-		alpha:0,
-		color:'ffffff',
-		type:0
+function effectAll(ctx) {
+	let length = effect.length;
+  	for(let i = 0; i < length; i++) {
+		exData = {
+			X:0,
+			Y:0,
+			dir:0,
+			speed:0,
+			size:[0],
+			size_2:[0,0],
+			alpha:[1,1],
+			alpha_2:[0,0],
+			width:[5],
+			width_2:[0,0],
+			down:[1,100],
+			color:'ffffff',
+			type:0,
+			typeNumber:0,
+			deletion:2
+		}
+		ex(effect[i],exData);
+		tn = exData.typeNumber;
+		exData.width_2[0] = exData.width[tn] - exData.width_2[1];
+		exData.width_2[1] += exData.width_2[0]/5;
+		exData.size_2[0] = exData.size[tn] - exData.size_2[1];
+		exData.size_2[1] += exData.size_2[0]/5;
+		/*
+		exData.alpha_2[0] = exData.alpha[tn] - exData.alpha_2[1];
+		exData.alpha_2[1] += exData.alpha_2[0]/500;*/
+		//move(exData.speed,exData.dir,exData);
+		EffDrw(ctx,exData.width_2[1],exData.size_2[1],exData.type,exData.color,exData.X,exData.Y,exData.dir,exData.alpha_2[1]);
+		exData.down[tn]--;
+		if(exData.down[tn] == 0) tn++;
+		exData.typeNumber = tn;
+		effect[i] = exData;
+		
+		if(exData.down[1] == 0)
+       	{
+       		effect.splice(i,1);
+	        length--;
+	        i--;
+       	}
 	}
-	move(exData.speed,exData.dir,exData);
-	effect[i] = exData;
+	
 }
 
-function addEffect() {
-
+function addEffect(object) {
+	console.log('add');
+	effect.push(object);
 }
 
+function EffDrw(ctx,wid,siz,ty,cl,X,Y,di,alpha) {
+	switch(ty) {
+		case 1:
+		ctx.beginPath();
+		ctx.lineWidth = wid;
+		ctx.globalAlpha = 1;
+		ctx.strokeStyle = cl;
+    	ctx.moveTo(X + Math.cos(rad(di))*siz*1,Y + Math.cos(rad(di-90))*siz*1);
+    	ctx.lineTo(X + Math.cos(rad(di-90))*siz*1,Y + Math.cos(rad(di))*siz*-1);
+    	ctx.lineTo(X + Math.cos(rad(di))*siz*-1,Y + Math.cos(rad(di-90))*siz*-1);
+    	ctx.lineTo(X + Math.cos(rad(di-90))*siz*-1,Y + Math.cos(rad(di))*siz*1);
+    	ctx.closePath();
+    	ctx.stroke();
+    	console.log(di);
+		break;
+		default:
+		ctx.beginPath();
+		ctx.lineWidth = wid;
+		ctx.globalAlpha = 1;
+		ctx.strokeStyle = cl;
+		ctx.arc(X,Y,siz,0,Math.PI*2,false);
+		ctx.stroke();
+		break;
+	}
+
+	ctx.globalAlpha = 1.0;
+ 	ctx.lineWidth = 1;
+}
 function laserAll(ctx) {
   	let length = laser.length;
   	for(let i = 0; i < length; i++) {
@@ -561,7 +628,6 @@ function laserAll(ctx) {
 	       	laser.splice(i,1);
 	        length--;
 	        i--;
-
 	    }
 		
 
@@ -620,7 +686,6 @@ function sleepByPromise(sec) {
 	return new Promise(resolve => setTimeout(resolve, sec*1000));
 }
 
-
 function game() {
 	
 	add_enemy({X:300,Y:0,color:'#b000a3',dir:[angle(300,0,400,200),90],shooter:[[{}],[{delete_:true,down:[160,100,10],dir_accele:[0,1.5,0],color:'#b000a3',laser:true,count:5,rota:72,shift:50}]],speed:[2,0,1],accele:[0.1,0,0.4],changeCond:{cond0:1,x0:400,y0:200,cond1:2,start1:0,goal1:200,cond2:4,y2:500},type:[0,1,0],down:[[0,0],[10,200],[0,0]],hp:20},1);		
@@ -667,8 +732,8 @@ function game() {
 		{rotaRate:10,speed:1,accele:2,st_dir:rndm(0,360)},
 		{rotaRate:-10,speed:3,accele:-4,down:30,speed_2:1,accele_2:0.2,type:[1,0],st_dir:rndm(0,360)}],
 		[{}],
-		[{speed:2,accele:0.5,dir_accele:1.0,type:[2,2,2,2,2,2,2],color:'#b000a3',size:30,btype:1,down:20,Addval:300,reverse:1}],
+		[{speed:2,accele:0.5,dir_accele:1.0,type:[2,2,2,2,2,2,2],color:'#b000a3',size:30,btype:1,down:20,Addval:300,reverse:1,delete_:true}],
 		[{}]],
-	speed:[2,0,0,0],accele:[0.1,0,0,0],changeCond:{cond0:1,x0:300,y0:100,cond1:3,hp1:70,delAll1:true,cond2:2,start2:0,goal2:50,cond3:3,hp3:10},type:[0,1,0,1,0],down:[[0,0],[35,35],[0,0],[0,250],[0,0]],hp:150,size:10},35);
+	speed:[2,0,0,0],accele:[0.1,0,0,0],changeCond:{cond0:1,x0:300,y0:100,cond1:3,hp1:70,delAll1:true,cond2:2,start2:0,goal2:50,cond3:3,hp3:0,delAll3:true},type:[0,1,0,1,0],down:[[0,0],[35,35],[0,0],[0,250],[0,0]],hp:150,size:10},35);
 	
 }	
