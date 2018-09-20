@@ -271,26 +271,26 @@ class drawAll extends Func {
 		exData = defau;
 		super.ex(this.array[value],exData);
 		tn = exData.typeNumber;
-       	exData['changeCond'][`chase${tn}`] && (exData.dir = this.angle(exData.X,exData.Y,player.X,player.Y));
-       	typeof this.special !== 'undefined' && this.special();
-       	this.dr();
-       	if(exData.interval[tn][0] == 0) {
-       		exData.interval[tn][0] = exData.interval[tn][1];
-       		console.log(value);
-       		typeof this.constant !== 'undefined' && this.constant();
-       	}
-       	if(super.changeCondition(exData['changeCond'][`cond${tn}`])) {
-       		exData['changeCond'][`color${tn}`] !== undefined && (exData.color = exData['changeCond'][`color${tn}`]);
-       		exData['changeCond'][`speed${tn}`] !== undefined && (exData.speed = exData['changeCond'][`speed${tn}`]);
-       		exData['changeCond'][`accele${tn}`] !== undefined && (exData.accele = exData['changeCond'][`accele${tn}`]);
-       		exData['changeCond'][`dir${tn}`] !== undefined && (exData.dir = exData['changeCond'][`dir${tn}`]);
-       		exData['changeCond'][`dir_accele${tn}`] !== undefined && (exData.dir_accele = exData['changeCond'][`dir_accele${tn}`]);
-       		exData['changeCond'][`delAll${tn}`] && (deleteAll = exData.enId);
-       		exData['changeCond'][`cond${tn + 1}`] === undefined ? deletelist.push(value) : tn++; 
-       	}
-       	exData.typeNumber = tn;
-       	this.delete(deletelist,value);
-       	this.array[value] = exData;
+       		exData['changeCond'][`chase${tn}`] && (exData.dir = this.angle(exData.X,exData.Y,player.X,player.Y));
+       		typeof this.special !== 'undefined' && this.special();
+       		this.dr();
+       		if(exData.interval[tn][0] == 0) {
+       			exData.interval[tn][0] = exData.interval[tn][1];
+       			console.log(value);
+       			typeof this.constant !== 'undefined' && this.constant();
+       		}
+		if(super.changeCondition(exData['changeCond'][`cond${tn}`])) {
+			exData['changeCond'][`color${tn}`] !== undefined && (exData.color = exData['changeCond'][`color${tn}`]);
+			exData['changeCond'][`speed${tn}`] !== undefined && (exData.speed = exData['changeCond'][`speed${tn}`]);
+			exData['changeCond'][`accele${tn}`] !== undefined && (exData.accele = exData['changeCond'][`accele${tn}`]);
+			exData['changeCond'][`dir${tn}`] !== undefined && (exData.dir = exData['changeCond'][`dir${tn}`]);
+			exData['changeCond'][`dir_accele${tn}`] !== undefined && (exData.dir_accele = exData['changeCond'][`dir_accele${tn}`]);
+			exData['changeCond'][`delAll${tn}`] && (deleteAll = exData.enId);
+			exData['changeCond'][`cond${tn + 1}`] === undefined ? deletelist.push(value) : tn++; 
+		}
+		exData.typeNumber = tn;
+		this.delete(deletelist,value);
+		this.array[value] = exData;
 	}
 	organize(arr) {
 		arr.forEach(function(value) {
@@ -309,21 +309,21 @@ function playerAll() {
  	player.spX = (2-input_key_buffer[16])*(input_key_buffer[39] - input_key_buffer[37]);
  	player.spY = (2-input_key_buffer[16])*(input_key_buffer[40] - input_key_buffer[38]);
  	player.X += player.spX;
-    player.Y += player.spY;
-    player.X > canvas.width && (player.X = canvas.width);
-    player.X < 0 && (player.X = 0);
-    player.Y < 0 && (player.pY = 0);
-    player.Y > canvas.height && (player.Y = canvas.height);
-    player.shot--;
-    if(input_key_buffer[90] && player.shot < 0) {
+	player.Y += player.spY;
+	player.X > canvas.width && (player.X = canvas.width);
+	player.X < 0 && (player.X = 0);
+	player.Y < 0 && (player.pY = 0);
+	player.Y > canvas.height && (player.Y = canvas.height);
+	player.shot--;
+	if(input_key_buffer[90] && player.shot < 0) {
 		Shot(player.X,player.Y);
-    	player.shot = 10;
-    }
-    ctx.beginPath();
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 5;
-    ctx.arc(player.X,player.Y,10,0,Math.PI*2,false);
-    ctx.stroke();
+	player.shot = 10;
+	}
+	ctx.beginPath();
+	ctx.strokeStyle = '#ffffff';
+	ctx.lineWidth = 5;
+	ctx.arc(player.X,player.Y,10,0,Math.PI*2,false);
+	ctx.stroke();
 }
 function addEffect(object) {
 	number.effect++;
@@ -373,7 +373,6 @@ function Shot(x,y) { p_bullet.push({X:x,Y:y,speed:0}); }
 
 class en_bulletAll extends drawAll {
 	special() {
-		console.log(this.array);
 		switch(exData.effect[0]) {
 	  		case 1:
 	  		super.DrawingMethod(exData.size * (15-exData.effect[1])/5, exData.costume, exData.color, exData.X, exData.Y, exData.dir,exData.effect[1]/10);
