@@ -418,8 +418,8 @@ class enemyAll extends drawAll {
 		if(exData.hp < 0) {
 			deleteAll = exData.enId;
 			array.push(index);
-			addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*10],width:[exData.size*100,0],color:exData.color,type:1,dir:exData.edir});
-       		addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*20],width:[exData.size*200,0],color:exData.color,type:1,dir:0});
+			addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*10],width:[exData.size*100,0],width_2:[0,0],color:exData.color,type:1,dir:exData.edir});
+       			addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*20],width:[exData.size*200,0],width_2:[0,0],color:exData.color,type:1,dir:0});
 		}
 	}
 	constant() {
