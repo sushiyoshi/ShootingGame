@@ -23,10 +23,11 @@ class Func {
 	rad(di) {
 		return di/180*Math.PI;
 	}
+	//this_array[value],exData
 	ex(object,object_2) {
 		for(let k in object) {
  			let copy;
- 			typeof object[k] !== 'object' ? copy = object[k] : copy = Object.assign({}, object[k]);
+ 			typeof object[k] !== "object" ? copy = object[k] : copy = Object.assign({}, object[k]);
  			copy !== undefined && (object_2[k] = copy);
  		}
 	}
@@ -43,7 +44,7 @@ class Func {
 		object.Y = parseFloat(object['Y'].toFixed(3));
 	}
 	distance(x1,y1,x2,y2) {
-	 	return Math.sqrt( Math.pow( x2-x1, 2 ) + Math.pow( y2-y1, 2 ) ) 
+	 	return Math.sqrt(Math.pow(x2-x1,2) + Math.pow(y2-y1,2) ) 
 	}
 	add(object,count,rota,st_dir,ls = false,shift = 0) {
 		let dt = object;
@@ -73,6 +74,10 @@ class Func {
 	laserAdd(cp) {
 		number.laser++;
 		laser[number.laser] = cp;
+	}
+	addEffect(object) {
+		number.effect++;
+		effect[number.effect] = object;
 	}
 	dis_laser(x,y,x1,y1,x2,y2) {
 	 	let a = y1-y2;
@@ -218,10 +223,9 @@ class Func {
 		}
 	}
 	colid(bool,ctx) {
-		if(bool) {
-	    	//エラーがでる
-	    	//const audio = document.getElementById("audio"); audio.play();
-	    	//console.log("touch");
+		if(bool) { 
+	    	let audio = document.getElementById("audio"); 
+	    	//audio.play();
 	    	ctx.beginPath();
 	    	ctx.fillStyle = '#b000a3';
 	    	ctx.arc(player.X,player.Y,5,0,Math.PI*2,false);
@@ -251,46 +255,46 @@ class Func {
 		}
 		exData.bulletNumber % object.cycle == 0 && this.add({changeCond:object['changeCond'],chase:object['chase'],deleteMessage:object['deleteMessage'],enId:object['enId'],color:object['color'], speed:object['speed'],accele:object['accele'], dir_accele:object['dir_accele'], interval:object['interval'], size:object['size'], type:object['type'], costume:object['costume'], bulletNumber:exData.bulletNumber, Addval:object['Addval'],width:object['width'],X:object['X'],Y:object['Y']}, object['count'], object['rota'], object['st_dir'],object['laser'],object['shift']);
 	}
-	delete(array) {}
+	delete(array,index) {}
 	constant() {}
 } 
 	
 class drawAll extends Func {	
 	constructor(array,def) {
-	    super(array,def);
+	    console.log(super(array,def));
 	}
 	loop() {
 		let deleteList = [];
 		Object.keys(this.array).forEach(function (value,index,array) {
-			const copy = Object.assign({}, this.def);
-			this.processing(value,index,array,copy,deleteList);
+			let copy = {};
+			this.ex(this.def,copy);
+			this.processing(value,index,array,copy,deleteList,this.array);
 		},this);
 		this.organize(deleteList);
 	}
-	processing(value,index,array,defau,deletelist) {
+	processing(value,index,array,defau,deletelist,this_array) {
 		exData = defau;
-		super.ex(this.array[value],exData);
+		super.ex(this_array[value],exData);
 		tn = exData.typeNumber;
-       		exData['changeCond'][`chase${tn}`] && (exData.dir = this.angle(exData.X,exData.Y,player.X,player.Y));
-       		typeof this.special !== 'undefined' && this.special();
-       		this.dr();
-       		if(exData.interval[tn][0] == 0) {
-       			exData.interval[tn][0] = exData.interval[tn][1];
-       			console.log(value);
-       			typeof this.constant !== 'undefined' && this.constant();
-       		}
-		if(super.changeCondition(exData['changeCond'][`cond${tn}`])) {
-			exData['changeCond'][`color${tn}`] !== undefined && (exData.color = exData['changeCond'][`color${tn}`]);
-			exData['changeCond'][`speed${tn}`] !== undefined && (exData.speed = exData['changeCond'][`speed${tn}`]);
-			exData['changeCond'][`accele${tn}`] !== undefined && (exData.accele = exData['changeCond'][`accele${tn}`]);
-			exData['changeCond'][`dir${tn}`] !== undefined && (exData.dir = exData['changeCond'][`dir${tn}`]);
-			exData['changeCond'][`dir_accele${tn}`] !== undefined && (exData.dir_accele = exData['changeCond'][`dir_accele${tn}`]);
-			exData['changeCond'][`delAll${tn}`] && (deleteAll = exData.enId);
-			exData['changeCond'][`cond${tn + 1}`] === undefined ? deletelist.push(value) : tn++; 
-		}
-		exData.typeNumber = tn;
-		this.delete(deletelist,value);
-		this.array[value] = exData;
+       	exData['changeCond'][`chase${tn}`] && (exData.dir = this.angle(exData.X,exData.Y,player.X,player.Y));
+       	typeof this.special !== 'undefined' && this.special();
+       	this.dr();
+       	if(exData.interval[tn][0] == 0) {
+       		exData.interval[tn][0] = exData.interval[tn][1];
+       		typeof this.constant !== 'undefined' && this.constant();
+       	}
+       	if(super.changeCondition(exData['changeCond'][`cond${tn}`])) {
+       		exData['changeCond'][`color${tn}`] !== undefined && (exData.color = exData['changeCond'][`color${tn}`]);
+       		exData['changeCond'][`speed${tn}`] !== undefined && (exData.speed = exData['changeCond'][`speed${tn}`]);
+       		exData['changeCond'][`accele${tn}`] !== undefined && (exData.accele = exData['changeCond'][`accele${tn}`]);
+       		exData['changeCond'][`dir${tn}`] !== undefined && (exData.dir = exData['changeCond'][`dir${tn}`]);
+       		exData['changeCond'][`dir_accele${tn}`] !== undefined && (exData.dir_accele = exData['changeCond'][`dir_accele${tn}`]);
+       		exData['changeCond'][`delAll${tn}`] && (deleteAll = exData.enId);
+       		exData['changeCond'][`cond${tn + 1}`] === undefined ? deletelist.push(value) : tn++; 
+       	}
+       	exData.typeNumber = tn;
+       	this.delete(deletelist,value);
+       	this_array[value] = exData;
 	}
 	organize(arr) {
 		arr.forEach(function(value) {
@@ -309,25 +313,21 @@ function playerAll() {
  	player.spX = (2-input_key_buffer[16])*(input_key_buffer[39] - input_key_buffer[37]);
  	player.spY = (2-input_key_buffer[16])*(input_key_buffer[40] - input_key_buffer[38]);
  	player.X += player.spX;
-	player.Y += player.spY;
-	player.X > canvas.width && (player.X = canvas.width);
-	player.X < 0 && (player.X = 0);
-	player.Y < 0 && (player.pY = 0);
-	player.Y > canvas.height && (player.Y = canvas.height);
-	player.shot--;
-	if(input_key_buffer[90] && player.shot < 0) {
+    player.Y += player.spY;
+    player.X > canvas.width && (player.X = canvas.width);
+    player.X < 0 && (player.X = 0);
+    player.Y < 0 && (player.pY = 0);
+    player.Y > canvas.height && (player.Y = canvas.height);
+    player.shot--;
+    if(input_key_buffer[90] && player.shot < 0) {
 		Shot(player.X,player.Y);
-	player.shot = 10;
-	}
-	ctx.beginPath();
-	ctx.strokeStyle = '#ffffff';
-	ctx.lineWidth = 5;
-	ctx.arc(player.X,player.Y,10,0,Math.PI*2,false);
-	ctx.stroke();
-}
-function addEffect(object) {
-	number.effect++;
-	effect[number.effect] = object;
+    	player.shot = 10;
+    }
+    ctx.beginPath();
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 5;
+    ctx.arc(player.X,player.Y,10,0,Math.PI*2,false);
+    ctx.stroke();
 }
 function pl_bulletAll() {
   	p_bullet.forEach(function(value,index,array) {
@@ -418,8 +418,13 @@ class enemyAll extends drawAll {
 		if(exData.hp < 0) {
 			deleteAll = exData.enId;
 			array.push(index);
-			addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*10],width:[exData.size*100,0],width_2:[0,0],color:exData.color,type:1,dir:exData.edir});
-       			addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*20],width:[exData.size*200,0],width_2:[0,0],color:exData.color,type:1,dir:0});
+			
+			this.addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*10],width:[exData.size*100,0],color:exData.color,type:1,dir:exData.edir});
+       		this.addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*20],width:[exData.size*200,0],color:exData.color,type:1,dir:0});
+       		//this.addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*10],width:[exData.size*100,0],width_2:[0,0],color:exData.color,type:1,dir:exData.edir});
+       		//this.addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*20],width:[exData.size*200,0],width_2:[0,0],color:exData.color,type:1,dir:0});
+       		//this.addEffect({X:exData.X,Y:exData.Y,size:[1,20],width:[150,0],color:exData.color,type:1,dir:exData.edir});
+       		//this.addEffect({X:exData.X,Y:exData.Y,size:[1,40],width:[250,0],color:exData.color,type:1,dir:0});
 		}
 	}
 	constant() {
@@ -466,6 +471,7 @@ class effectAll extends drawAll {
 	dr() {
 		this.PrptUpdate();
 		this.DrawingMethod(exData.size_2[1],exData.costume,exData.color,exData.X,exData.Y,exData.dir,exData.alpha,exData.width_2[1]);
+		//this.DrawingMethod(exData.size[tn],exData.costume,exData.color,exData.X,exData.Y,exData.dir,exData.alpha,exData.width[tn]);
 		this.move(exData.speed,exData.dir,exData);
 	}
 }
@@ -560,6 +566,7 @@ window.requestAnimationFrame(animloop);
 }());
 
 function game() {
+	
 	add_enemy({X:300,Y:0,color:'#b000a3',dir:func.angle(300,0,400,200),shooter:[[{}],[{deleteMessage:true,color:'#b000a3',laser:true,count:5,rota:72,shift:50,changeCond:{cond0:2,down0:160,dir_accele0:1,cond1:2,down1:100,dir_accele1:0,cond2:2,down2:10}}]],speed:2,accele:0.1,changeCond:{cond0:1,x0:400,y0:200,dir0:90,speed0:0,accele0:0,cond1:2,speed1:1,accele1:0.4,down1:200,cond2:4,y2:500},type:[0,1,0],interval:[[0,0],[10,200],[0,0]],hp:20},1);	
 	add_enemy({X:300,Y:0,color:'#b000a3',dir:func.angle(300,0,200,200),shooter:[[{}],[{deleteMessage:true,color:'#b000a3',laser:true,count:5,rota:72,shift:50,changeCond:{cond0:2,down0:160,dir_accele0:1,cond1:2,down1:100,dir_accele1:0,cond2:2,down2:10}}]],speed:2,accele:0.1,changeCond:{cond0:1,x0:200,y0:200,dir0:90,speed0:0,accele0:0,cond1:2,speed1:1,accele1:0.4,down1:200,cond2:4,y2:500},type:[0,1,0],interval:[[0,0],[10,200],[0,0]],hp:20},1);	
 	add_enemy({X:300,Y:0,color:'#b000a3',size:5,dir:func.angle(300,0,300,100),shooter:[[{}],[{deleteMessage:true,color:'#b000a3',laser:true,shift:50}]],speed:2,accele:0.1,changeCond:{cond0:1,x0:300,y0:100,dir0:90,speed0:0,accele0:0,cond1:2,speed1:1,accele1:0.4,down1:200,cond2:4,y2:500},type:[0,1,0],interval:[[0,0],[10,200],[0,0]],hp:20},3);		
@@ -568,6 +575,7 @@ function game() {
 		add_enemy({X:150,Y:0,shooter:[[{count:5,rota:30,st_dir:270,speed:1,accele:1,dir_accele:1}]],speed:2,type:[1],interval:[[100,100]],hp:5},i);
 		add_enemy({X:450,Y:0,shooter:[[{count:5,rota:30,st_dir:135,speed:1,accele:1,dir_accele:1}]],speed:2,type:[1],interval:[[100,100]],hp:5},i);
 	}
+	
 	for(let i = 0; i <= 4; i++) {
 		add_enemy({X:350+(i%2*50),Y:0,shooter:[[{count:1,st_dir:180,speed:1,laser:true,changeCond:{cond0:2,down0:1,cond1:2,down1:460,cond2:2,down2:10},shift:30,deleteMessage:true}],[{}],[{count:3,rota:120,st_dir:func.rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:1,accele:0,type:[1,0,1,0],interval:[[10,5000],[0,0],[80,80],[0,0]],changeCond:{cond0:2,down0:25,cond1:3,hp1:19,speed1:0.5,accele1:0.15,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,down2:500,speed2:2,cond3:0},hp:20},i*4+8);
 		add_enemy({X:250-(i%2*50),Y:0,shooter:[[{count:1,st_dir:0,speed:1,laser:true,changeCond:{cond0:2,down0:1,cond1:2,down1:460,cond2:2,down2:10},shift:30,deleteMessage:true}],[{}],[{count:3,rota:120,st_dir:func.rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:1,accele:0,type:[1,0,1,0],interval:[[10,5000],[0,0],[80,80],[0,0]],changeCond:{cond0:2,down0:25,cond1:3,hp1:19,speed1:0.5,accele1:0.15,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,down2:500,speed2:2,cond3:0},hp:20},i*4+10);
@@ -581,7 +589,9 @@ function game() {
 		{rotaRate:10,speed:1,accele:2,st_dir:func.rndm(0,360)},
 		{rotaRate:-10,speed:3,accele:-4,type:[1,0],st_dir:func.rndm(0,360),changeCond:{cond0:2,down0:30,speed0:1,accele0:0.2,cond1:0}}],
 		[{}],
-		[{interval:[[20,20]],speed:2,accele:0.5,dir_accele:1,type:[1],color:'#b000a3',size:30,costume:'big_bullet',Addval:300,reverse:2,deleteMessage:true}],
+		[{count:2,interval:[[20,20]],st_dir:90,speed:2,accele:0.5,dir_accele:1,type:[1],color:'#b000a3',size:30,costume:'big_bullet',Addval:300,reverse:2,deleteMessage:true},
+		{count:1,interval:[[20,20]],st_dir:0,speed:2,accele:0.5,dir_accele:1,type:[1],color:'#b000a3',size:30,costume:'big_bullet',Addval:300,reverse:2,deleteMessage:true}
+		],
 		[{}]],
 	speed:2,accele:0.1,changeCond:{cond0:1,x0:300,y0:100,speed0:0,accele0:0,cond1:3,hp1:140,delAll1:true,cond2:2,down2:50,cond3:3,hp3:0,delAll3:true},type:[0,1,0,1,0],interval:[[0,0],[35,35],[0,0],[1,250],[0,0]],hp:150,size:10},35);
 }
