@@ -593,5 +593,5 @@ function game() {
 		{count:1,interval:[[20,20]],st_dir:0,speed:2,accele:0.5,dir_accele:1,type:[1],color:'#b000a3',size:30,costume:'big_bullet',Addval:300,reverse:2,deleteMessage:true}
 		],
 		[{}]],
-	speed:2,accele:0.1,changeCond:{cond0:1,x0:300,y0:100,speed0:0,accele0:0,cond1:3,hp1:140,delAll1:true,cond2:2,down2:50,cond3:3,hp3:0,delAll3:true},type:[0,1,0,1,0],interval:[[0,0],[35,35],[0,0],[1,250],[0,0]],hp:150,size:10},35);
+	speed:2,accele:0.1,changeCond:{cond0:1,x0:300,y0:100,speed0:0,accele0:0,cond1:3,hp1:70,delAll1:true,cond2:2,down2:50,cond3:3,hp3:0,delAll3:true},type:[0,1,0,1,0],interval:[[0,0],[35,35],[0,0],[1,250],[0,0]],hp:150,size:10},35);
 }
