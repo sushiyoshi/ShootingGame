@@ -23,11 +23,10 @@ class Func {
 	rad(di) {
 		return di/180*Math.PI;
 	}
-	//this_array[value],exData
 	ex(object,object_2) {
 		for(let k in object) {
  			let copy;
- 			typeof object[k] !== "object" ? copy = object[k] : copy = Object.assign({}, object[k]);
+ 			typeof object[k] !== "object" ? copy = object[k] : copy = JSON.parse(JSON.stringify(object[k]));
  			copy !== undefined && (object_2[k] = copy);
  		}
 	}
@@ -225,7 +224,7 @@ class Func {
 	colid(bool,ctx) {
 		if(bool) { 
 	    	let audio = document.getElementById("audio"); 
-	    	//audio.play();
+	    	audio.play();
 	    	ctx.beginPath();
 	    	ctx.fillStyle = '#b000a3';
 	    	ctx.arc(player.X,player.Y,5,0,Math.PI*2,false);
@@ -266,8 +265,7 @@ class drawAll extends Func {
 	loop() {
 		let deleteList = [];
 		Object.keys(this.array).forEach(function (value,index,array) {
-			let copy = {};
-			this.ex(this.def,copy);
+			const copy = JSON.parse(JSON.stringify(this.def));
 			this.processing(value,index,array,copy,deleteList,this.array);
 		},this);
 		this.organize(deleteList);
@@ -279,7 +277,7 @@ class drawAll extends Func {
        	exData['changeCond'][`chase${tn}`] && (exData.dir = this.angle(exData.X,exData.Y,player.X,player.Y));
        	typeof this.special !== 'undefined' && this.special();
        	this.dr();
-       	if(exData.interval[tn][0] == 0) {
+       	if(exData.interval[tn][0] == 0) { 
        		exData.interval[tn][0] = exData.interval[tn][1];
        		typeof this.constant !== 'undefined' && this.constant();
        	}
@@ -391,7 +389,7 @@ class en_bulletAll extends drawAll {
 	constant () {
 		switch(exData.type[tn]) {
 			case 1:
-			this.add({deleteMessage:true,speed:0,type:[1,0],color:'#b000a3',ad:exData.enId + '-' + String(exData.bulletNumber),dir_accele:0.1,costume:0,size:1,effect:[1,0],changeCond:{cond0:5,accele0:0.5,color0:'#516c7f',cond1:0}},1,0,this.rndm(0,360));
+			this.add({X:exData.X,Y:exData.Y,deleteMessage:true,speed:0,type:[1,0],color:'#b000a3',ad:exData.enId + '-' + String(exData.bulletNumber),dir_accele:0.1,costume:0,size:1,effect:[1,0],changeCond:{cond0:5,accele0:0.5,color0:'#516c7f',cond1:0}},1,0,this.rndm(0,360));
 			break;
 		}
 	}
@@ -421,10 +419,6 @@ class enemyAll extends drawAll {
 			
 			this.addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*10],width:[exData.size*100,0],color:exData.color,type:1,dir:exData.edir});
        		this.addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*20],width:[exData.size*200,0],color:exData.color,type:1,dir:0});
-       		//this.addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*10],width:[exData.size*100,0],width_2:[0,0],color:exData.color,type:1,dir:exData.edir});
-       		//this.addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*20],width:[exData.size*200,0],width_2:[0,0],color:exData.color,type:1,dir:0});
-       		//this.addEffect({X:exData.X,Y:exData.Y,size:[1,20],width:[150,0],color:exData.color,type:1,dir:exData.edir});
-       		//this.addEffect({X:exData.X,Y:exData.Y,size:[1,40],width:[250,0],color:exData.color,type:1,dir:0});
 		}
 	}
 	constant() {
@@ -589,9 +583,8 @@ function game() {
 		{rotaRate:10,speed:1,accele:2,st_dir:func.rndm(0,360)},
 		{rotaRate:-10,speed:3,accele:-4,type:[1,0],st_dir:func.rndm(0,360),changeCond:{cond0:2,down0:30,speed0:1,accele0:0.2,cond1:0}}],
 		[{}],
-		[{count:2,interval:[[20,20]],st_dir:90,speed:2,accele:0.5,dir_accele:1,type:[1],color:'#b000a3',size:30,costume:'big_bullet',Addval:300,reverse:2,deleteMessage:true},
-		{count:1,interval:[[20,20]],st_dir:0,speed:2,accele:0.5,dir_accele:1,type:[1],color:'#b000a3',size:30,costume:'big_bullet',Addval:300,reverse:2,deleteMessage:true}
+		[{interval:[[20,20]],st_dir:90,speed:2,accele:0.5,dir_accele:1,type:[1],color:'#b000a3',size:30,costume:'big_bullet',Addval:300,reverse:2,deleteMessage:true},
 		],
 		[{}]],
-	speed:2,accele:0.1,changeCond:{cond0:1,x0:300,y0:100,speed0:0,accele0:0,cond1:3,hp1:70,delAll1:true,cond2:2,down2:50,cond3:3,hp3:0,delAll3:true},type:[0,1,0,1,0],interval:[[0,0],[35,35],[0,0],[1,250],[0,0]],hp:150,size:10},35);
+	speed:2,accele:0.1,changeCond:{cond0:1,x0:300,y0:100,speed0:0,accele0:0,cond1:3,hp1:140,delAll1:true,cond2:2,down2:50,cond3:3,hp3:0,delAll3:true},type:[0,1,0,1,0],interval:[[0,0],[35,35],[0,0],[1,250],[0,0]],hp:150,size:10},36);
 }
