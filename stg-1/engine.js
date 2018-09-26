@@ -571,8 +571,8 @@ function game() {
 	}
 	
 	for(let i = 0; i <= 4; i++) {
-		add_enemy({X:350+(i%2*50),Y:0,shooter:[[{count:1,st_dir:180,speed:1,laser:true,changeCond:{cond0:2,down0:1,cond1:2,down1:460,cond2:2,down2:10},shift:30,deleteMessage:true}],[{}],[{count:3,rota:120,st_dir:func.rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:1,accele:0,type:[1,0,1,0],interval:[[10,5000],[0,0],[80,80],[0,0]],changeCond:{cond0:2,down0:25,cond1:3,hp1:19,speed1:0.5,accele1:0.15,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,down2:500,speed2:2,cond3:0},hp:20},i*4+8);
-		add_enemy({X:250-(i%2*50),Y:0,shooter:[[{count:1,st_dir:0,speed:1,laser:true,changeCond:{cond0:2,down0:1,cond1:2,down1:460,cond2:2,down2:10},shift:30,deleteMessage:true}],[{}],[{count:3,rota:120,st_dir:func.rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:1,accele:0,type:[1,0,1,0],interval:[[10,5000],[0,0],[80,80],[0,0]],changeCond:{cond0:2,down0:25,cond1:3,hp1:19,speed1:0.5,accele1:0.15,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,down2:500,speed2:2,cond3:0},hp:20},i*4+10);
+		add_enemy({X:350+(i%2*50),Y:0,shooter:[[{count:1,st_dir:180,speed:1,laser:true,changeCond:{cond0:2,down0:1,cond1:2,down1:460,cond2:2,down2:10},shift:30,deleteMessage:true}],[{}],[{count:3,rota:120,st_dir:func.rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:1,accele:0,type:[1,0,1,0],interval:[[10,5000],[0,0],[80,80],[0,0]],changeCond:{cond0:2,down0:25,cond1:3,hp1:19,speed1:0.5,accele1:0.15,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,down2:500,cond3:0},hp:20},i*4+8);
+		add_enemy({X:250-(i%2*50),Y:0,shooter:[[{count:1,st_dir:0,speed:1,laser:true,changeCond:{cond0:2,down0:1,cond1:2,down1:460,cond2:2,down2:10},shift:30,deleteMessage:true}],[{}],[{count:3,rota:120,st_dir:func.rndm(0,360),rotaRate:50,speed:0,accele:0.2,color:'#b000a3'}],[{}]],speed:1,accele:0,type:[1,0,1,0],interval:[[10,5000],[0,0],[80,80],[0,0]],changeCond:{cond0:2,down0:25,cond1:3,hp1:19,speed1:0.5,accele1:0.15,delAll1:true,color1:'#b000a3',chase2:true,cond2:2,down2:500,cond3:0},hp:20},i*4+10);
 	}
 	for(let i = 0; i<= 9; i++) {
 		add_enemy({X:0,Y:100,dir:0,shooter:[[{count:5,rota:10,speed:1,accele:0.1,zikimuke:true,rotaRate:-20}]],speed:2,type:[1],interval:[[100,100]],hp:5},i*2+8);
@@ -586,5 +586,5 @@ function game() {
 		[{interval:[[20,20]],st_dir:90,speed:2,accele:0.5,dir_accele:1,type:[1],color:'#b000a3',size:30,costume:'big_bullet',Addval:300,reverse:2,deleteMessage:true},
 		],
 		[{}]],
-	speed:2,accele:0.1,changeCond:{cond0:1,x0:300,y0:100,speed0:0,accele0:0,cond1:3,hp1:140,delAll1:true,cond2:2,down2:50,cond3:3,hp3:0,delAll3:true},type:[0,1,0,1,0],interval:[[0,0],[35,35],[0,0],[1,250],[0,0]],hp:150,size:10},36);
+	speed:2,accele:0.1,changeCond:{cond0:1,x0:300,y0:100,speed0:0,accele0:0,cond1:3,hp1:70,delAll1:true,cond2:2,down2:50,cond3:3,hp3:0,delAll3:true},type:[0,1,0,1,0],interval:[[0,0],[35,35],[0,0],[1,250],[0,0]],hp:150,size:10},36);
 }
