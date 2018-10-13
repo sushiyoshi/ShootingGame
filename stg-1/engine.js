@@ -894,7 +894,6 @@ function lineBreak(str,max) {
 	}
 }
 function serifData(p) {
-	//僕がセリフ考えてるわけじゃないよ。友人がここ書いてる
 	SerifElem = {num:0,length:1,r:"",max:14,bake:0,waku:320,waku_2:180};
 	Serif = [];
 	switch(p) {
@@ -910,6 +909,8 @@ function serifData(p) {
 		addSerif({str:"では健闘を祈る。",wait:3,speed:0.02});
 		break;
 		case 'boss':
+		addSerif({str:"",wait:0,speed:0.05});
+		addSerif({str:"",wait:0,speed:0.01,shake:true});
 		addSerif({str:"このあたりは特にウイルスの反応が高い。十分に注",wait:1.15,speed:0.05});
 		addSerif({str:bake(12),wait:0.3,speed:0.01,shake:true});
 		addSerif({str:"ど、どうした。応答してくれ",wait:1,speed:0.01,shake:true});
