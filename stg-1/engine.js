@@ -494,7 +494,7 @@ class en_bulletAll extends drawAll {
 	constant () {
 		switch(exData.type[tn]) {
 			case 1:
-			this.add({X:exData.X,Y:exData.Y,deleteMessage:true,speed:0,type:[1,0],color:thema,ad:exData.enId + '-' + String(exData.bulletNumber),dir_accele:0.1,costume:0,size:1,effect:[1,0],changeCond:[{cond:5,accele:0.5,color:'#516c7f'},{cond:0}]},1,0,this.rndm(0,360));
+			this.add({X:exData.X,Y:exData.Y,deleteMessage:true,speed:0,type:[1,0],color:thema,ad:exData.enId + '-' + String(exData.bulletNumber),dir_accele:0.1,costume:0,size:1,effect:[1,0],changeCond:[{cond:5,accele:0.5,color:'#516c7f'},{cond:0}]},1,0,rndm(0,360));
 			break;
 		}
 	}
