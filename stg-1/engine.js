@@ -1,53 +1,3 @@
-let canvas = document.getElementById('stg');
-const ctx = canvas.getContext('2d');
-let bullet = {}; //敵の弾データ
-let address = {}; //弾をグループ化。弾にまとめて命令をだしたいときに使う。いまのところ合図にしか使っていない。
-//アドレスシステムはまた未完成なので、バグが多いかもしれない。
-let effect = {}; //エフェクトデータ
-let laser = {}; //レーザーデータ
-let exData = {}; //展開したデータをここにいれる
-let player = {X:200,Y:400,spX:0,spY:0,shot:0,anim:0,alive:true,ghost:0,hp:5,score:0,score_2:0,graze:0};
-//X,Y:座標　spX,spY:移動速度 shot:ショット間隔 anim:猫耳ぴょこぴょこ alive:生死　ghost:被弾後の無敵状態 hp:hp score,score_2:スコア graze:グレイズ
-let input_key_buffer = [];//キー入力
-for(let i = 0; i <= 226; i++) input_key_buffer[i] = false;//押してない状態を初期値とする
-let p_bullet = [];//プレイヤーの弾データ
-let enemy = {};//敵データ
-let touchLs;//レーザーの判定
-let touchBul;//弾の判定
-let number = {enemy:0,bullet:0,laser:0,effect:0};//敵、弾、レーザー、エフェクトの総数（削除されたものも含む)
-let deleteAll;//指定された敵idの弾を全削除する　発火の恐れあり。
-let tn = 0;　//exData.typeNumberの値を入れてる。いちいち記述するのが面倒なので
-let thema;//ゲーム全体の色を決める。ステージごとに変わる。
-let bossData = {d1:new Date(),d2:new Date()};//ボス情報表示。
-let stage =	0;//ステージ番号
-let themaList = ["#b000a3","#00af00","#39A0DA"];//左からステージ1、ステージ2、ステージ3のテーマ。
-let SerifElem = {num:0,length:1,r:"",max:14,bake:0,waku:320,waku_2:180}
-//num:処理する台詞の要素番号　length:表示する台詞の文字数　r:行分け前の台詞　max:一行に表示できる文字数　bake:文字化け　waku:枠の幅
-let Serif = []//台詞データ
-let SerifResult = [];//採集敵に表示する（行分け後）の台詞
-let audioElem = {
-	bgm:new Audio('sumia.mp3'),
-	enemy_crash:new Audio('audio/magic3.mp3'),
-	enemy_shot:new Audio('audio/damage6.mp3'),
-	crash:new Audio('audio/attack1.mp3'),
-	res:new Audio("audio/tr.mp3"),
-	noise:new Audio("audio/trx01.mp3"),
-	noise2:new Audio("audio/noise03.mp3"),
-	warning:new Audio("audio/warning.mp3"),
-	graze:new Audio("audio/automatic_pencil1.mp3"),
-	address:new Audio("audio/magic_wave3.mp3"),
-	laser:new Audio("audio/laser.mp3"),
-	star_crash:new Audio("audio/sen_fa_maho_kougeki06.mp3")
-}//bgm,効果音
-let boss;//ボス真偽
-let tempo = 7;//猫耳ぴょこぴょこの速さ　音楽に合わせて変化させたい
-let bomb = {size:0,size_2:0,alpha:0};//未実装ボム
-let bk;　//文字化けテキストを入れる場所　なぜかグローバル変数
-audioElem['crash'].volume = 0.6;
-audioElem['address'].volume = 0.5;
-audioElem['bgm'].volume = 0.6;
-audioElem['enemy_shot'].volume = 0.5;
-audioElem['laser'].volume = 0.5;
 //敵や敵が撃つ弾やレーザーを描画するメソッドを定義しているクラス..のはずだったのだが、このクラスに色々な処理を詰め込みすぎて最終的に意味の分からないものになってしまった。
 class Func {
 	constructor(array = null,def = null) {
@@ -55,7 +5,7 @@ class Func {
 		this.def = def;
 	}
 	//ステージ毎に呼び出される。テーマが変わるだけ。
-	thema (color) {
+	theme (color) {
 		this.def['color'] = color
 	}
 	//ラジアン角
@@ -186,20 +136,20 @@ class Func {
 	//敵とプレイヤー弾のあたり判定　ここ改善の余地あり
 	collider() {
 	  	p_bullet.forEach(function(value) {
-	  		if(this.distance(exData.X,exData.Y,value['X'],value['Y']) < exData.collision){exData.hp--; player.score+=10}
+	  		if(this.distance(exData.X,exData.Y,value['X'],value['Y']) < exData.collision){exData.hp--; player['stageScore'][stage-1]+=100}
 	  	},this);
 	}
 	//描画メソッド。beginPathとかの簡略化を狙ったんだけど可読性だめかな？
 	draw(obj) {
 		ctx.beginPath();
 		let exD = {
-			wid:1,//lineWidth
+			wid:2,//lineWidth
 			fil_style:'#ffffff',//fillStyle
 			st_style:'#ffffff',//strokeStyle
 			st:false,//stroke();するかどうか
 			fil:false,//fill();するどうか
 			siz:exData.size,//大きさ
-			alpha:1,//alpha値。なぜかここが書き換わっていることを1回観測。参照渡しパターンかな
+			alpha:1,//alpha
 			circle:true,
 			close:false,
 			X:exData.X,
@@ -207,8 +157,6 @@ class Func {
 			start:0,
 			end:Math.PI*2
 		}
-		//↓ここアンコメントすると重くなる　ここからalpha値の書き換えが観測できるはず。...もう一度見たら書き換わってなかった。気のせいかな。
-		//console.log(exD.alpha);
 		this.ex(obj,exD);
 		ctx.beginPath();
 	 	ctx.lineWidth = exD.wid;
@@ -271,7 +219,8 @@ class Func {
 	 		break;
 			//レーザー
 	 		case 'laser':
-	 		touchLs = this.dis_laser(player.X,player.Y,X,Y,X + Math.cos(this.rad(di))*400,Y + Math.sin(this.rad(di))*400) < wid*1.5;
+	 		//touchLs = this.dis_laser(player.X,player.Y,X,Y,X + Math.cos(this.rad(di))*400,Y + Math.sin(this.rad(di))*400) < wid*1.5;
+	 		touchLs = isCrossLines({x:X,y:Y},{x:X + Math.cos(this.rad(di))*400,y:Y + Math.sin(this.rad(di))*400},{x:player.X+player.spX/2,y:player.Y+player.spY/2},{x:player.X-player.spX/2,y:player.Y-player.spY/2});
 	 		tn == 1 && this.graze(this.dis_laser(player.X,player.Y,X,Y,X + Math.cos(this.rad(di))*400,Y + Math.sin(this.rad(di))*400) < wid*1.5 && this.dis_laser(player.X,player.Y,X,Y,X + Math.cos(this.rad(di))*400,Y + Math.sin(this.rad(di))*400) < wid*20,false);
 	 		circle && this.draw({fil:true,alpha:alpha,siz:5});
 	 		circle && (tn == 1 ? this.draw({st:true,siz:wid,st_style:cl,wid:wid/1.8,alpha:0.5}) : this.draw({st:true,siz:wid,st_style:cl,wid:wid/1.8,alpha:alpha}))
@@ -357,10 +306,34 @@ class Func {
 			}
 			this.draw({circle:false,X:[20,400],Y:[Y+siz,Y+siz],st_style:'#f00',st:true});
 			this.draw({circle:false,X:[20,400],Y:[Y+siz*1.3,Y+siz*1.3],st_style:'#f00',st:true});
-			this.draw({circle:false,X:[20,400],Y:[Y-siz,Y-siz],cl:thema,st:true,st_style:'#f00'});
+			this.draw({circle:false,X:[20,400],Y:[Y-siz,Y-siz],cl:theme,st:true,st_style:'#f00'});
 			this.draw({circle:false,X:[20,400],Y:[Y-siz*1.3,Y-siz*1.3],st:true,st_style:'#f00'});
 			break;
-
+			case 'bomb':
+			exData.dir+=(500-siz)/80;
+			bombInfo.X = exData.X;
+			bombInfo.Y = exData.Y;
+			bombInfo.size = exData.size_2[1];
+			func.draw({circle:false,st:true,cl:'#fff',wid:5,close:true,
+				X:[X+Math.cos(this.rad(di))*siz,X+Math.cos(this.rad(di+45))*siz,X+Math.cos(this.rad(di+90))*siz,X+Math.cos(this.rad(di+135))*siz,X+Math.cos(this.rad(di+180))*siz,X+Math.cos(this.rad(di+225))*siz,X+Math.cos(this.rad(di+270))*siz,X+Math.cos(this.rad(di+315))*siz],
+				Y:[Y+Math.sin(this.rad(di))*siz,Y+Math.sin(this.rad(di+45))*siz,Y+Math.sin(this.rad(di+90))*siz,Y+Math.sin(this.rad(di+135))*siz,Y+Math.sin(this.rad(di+180))*siz,Y+Math.sin(this.rad(di+225))*siz,Y+Math.sin(this.rad(di+270))*siz,Y+Math.sin(this.rad(di+315))*siz],
+			});
+			func.draw({circle:false,st:true,cl:'#fff',wid:5,close:true,
+				X:[X+Math.cos(this.rad(di*-1))*siz,X+Math.cos(this.rad(di*-1+45))*siz,X+Math.cos(this.rad(di*-1+90))*siz,X+Math.cos(this.rad(di*-1+135))*siz,X+Math.cos(this.rad(di*-1+180))*siz,X+Math.cos(this.rad(di*-1+225))*siz,X+Math.cos(this.rad(di*-1+270))*siz,X+Math.cos(this.rad(di*-1+315))*siz],
+				Y:[Y+Math.sin(this.rad(di*-1))*siz,Y+Math.sin(this.rad(di*-1+45))*siz,Y+Math.sin(this.rad(di*-1+90))*siz,Y+Math.sin(this.rad(di*-1+135))*siz,Y+Math.sin(this.rad(di*-1+180))*siz,Y+Math.sin(this.rad(di*-1+225))*siz,Y+Math.sin(this.rad(di*-1+270))*siz,Y+Math.sin(this.rad(di*-1+315))*siz],
+			});
+			
+			break;
+			case 'text':
+			ctx.rotate(this.rad(exData.tdir));
+			ctx.font = exData.font;
+			ctx.textAlign = exData.algin;
+			ctx.globalAlpha = alpha;
+			ctx.lineWidth = wid;
+			ctx.fillStyle = cl;
+			exData.bake > 0 ?  ctx.fillText(bake(exData.text.length),X,Y) : ctx.fillText(exData.text,X,Y);
+			ctx.rotate(this.rad(exData.tdir*-1));
+			break;
 	 	}
 		//細長い弾。costumeに数字が入れられている時はこちらとみなす。数字がでかいほど弾は細長くなる。
 	 	if(typeof ty == 'number') {
@@ -381,6 +354,7 @@ class Func {
 	graze(bool,g = true) {
 		if(bool && exData.graze && player.ghost <= 0) {
 	 		player.graze++;
+	 		player.stageScore[stage-1] += 10;
 	 		audioElem['graze'].load();
 	 		audioElem['graze'].play();
 	 		g && (exData.graze = false);
@@ -513,6 +487,7 @@ class drawAll extends Func {
        		exData['changeCond'][tn]['dir'] !== undefined && (exData.dir = this.RgEp(exData['changeCond'][tn],'dir'));
        		exData['changeCond'][tn]['costume'] !== undefined && (exData.costume = exData['changeCond'][tn]['costume']);
        		exData['changeCond'][tn]['dir_accele'] !== undefined && (exData.dir_accele = exData['changeCond'][tn]['dir_accele']);
+       		exData['changeCond'][tn]['dir_accele_2'] !== undefined && (exData.dir_accele_2 = exData['changeCond'][tn]['dir_accele_2']);
        		exData['changeCond'][tn]['delAll'] && (deleteAll = exData.enId);
        		//最後の条件となったら削除リストに追加
        		exData['changeCond'][tn+1] === undefined ? deletelist.push(value) : tn++;
@@ -594,7 +569,7 @@ class en_bulletAll extends drawAll {
 		switch(exData.type[tn]) {
 			//1面ボス2個目の弾幕-1
 			case 1:
-			this.add({X:exData.X,Y:exData.Y,st_dir:rndm(0,360),deleteMessage:true,speed:0,color:thema,ad:exData.enId + '-' + String(exData.bulletNumber),dir_accele:0.1,costume:0,size:1.5,effect:[1,0],changeCond:[{cond:5,accele:0.5,color:'#516c7f'},{cond:0}]},1,0);
+			this.add({X:exData.X,Y:exData.Y,st_dir:rndm(0,360),deleteMessage:true,speed:0,color:theme,ad:exData.enId + '-' + String(exData.bulletNumber),dir_accele:0.1,costume:0,size:1.5,effect:[1,0],changeCond:[{cond:5,accele:0.5,color:'#516c7f'},{cond:0}]},1,0);
 			break;
 			//2-1-1
 			case 2:
@@ -602,8 +577,7 @@ class en_bulletAll extends drawAll {
 			break;
 			//2-2-1
 			case 3:
-			console.log(exData.enId + '-' + String(exData.bulletNumber));
-			this.add({X:exData.X,Y:exData.Y,st_dir:rndm(0,360),deleteMessage:true,speed:0,color:exData.color,ad:exData.enId + '-' + String(exData.bulletNumber),dir_accele:0.1,size:exData.size,changeCond:[{cond:5,accele:0.7,color:'#516c7f'},{cond:0}]},1,0);
+			this.add({deleteMessage:true,X:exData.X,Y:exData.Y,st_dir:rndm(0,360),deleteMessage:true,speed:0,color:exData.color,ad:exData.enId + '-' + String(exData.bulletNumber),dir_accele:0.1,size:exData.size,changeCond:[{cond:5,accele:0.7,color:'#516c7f'},{cond:0}]},1,0);
 			break;
 			//2-2-2
 			case 4:
@@ -614,7 +588,7 @@ class en_bulletAll extends drawAll {
 					//敵のIDを渡してる
 					let result = exData.enId.split(/-/);
 					exData.enId =`${result[0]}-${Number(result[1])+10}`;
-					this.add({bulletNumber:exData.bulletNumber,X:exData.X,Y:exData.Y,st_dir:rndm(0,360),color:themaList[rndm(0,3)],deleteMessage:true,costume:'star_bullet',size:exData.size-2,count:1,Addval:100,enId:exData.enId,speed:1,accele:3,type:[0,3,4],changeCond:[{cond:2,down:20},{cond:0},{cond:2,down:100}],interval:[[0,0],[10,20],[1,100]]},1,0);
+					this.add({deleteMessage:true,bulletNumber:exData.bulletNumber,X:exData.X,Y:exData.Y,st_dir:rndm(0,360),color:themeList[rndm(0,3)],deleteMessage:true,costume:'star_bullet',size:exData.size-2,count:1,Addval:100,enId:exData.enId,speed:1,accele:3,type:[0,3,4],changeCond:[{cond:2,down:20},{cond:0},{cond:2,down:100}],interval:[[0,0],[10,20],[1,100]]},1,0);
 				}
 
 			}
@@ -624,7 +598,7 @@ class en_bulletAll extends drawAll {
 	}
 	delete(array,index) {
 		//親（その弾を撃った敵）が倒されたかつdeleteMessageが真なら、または全削除命令を受けた時削除
-		if(exData.deleteMessage && deleteAll == exData.enId || index <= number.bulletdel) {
+		if(exData.deleteMessage && deleteAll == exData.enId || index <= number.bulletdel || (player.bomb > 0 && this.distance(exData.X,exData.Y,bombInfo.X,bombInfo.Y)< bombInfo.size)) {
 			array.push(index);
 			this.addEffect({costume:'circle',X:exData.X,Y:exData.Y,size:[1,exData.size*2],width:[exData.size*20,0],color:exData.color,dir:0});
 		}
@@ -653,8 +627,8 @@ class enemyAll extends drawAll {
 	}
 	delete(array,index) {
 		//hpがなくなった時または全削除命令を受けた時
-		if(exData.hp < 0 || index <= number.enemydel) {
-			if(exData.hp < 0) player.score+=exData.score;
+		if(exData.hp < 0 || index <= number.enemydel || (player.bomb > 0 && !exData.boss && this.distance(exData.X,exData.Y,bombInfo.X,bombInfo.Y)< bombInfo.size)) {
+			if(exData.hp < 0) player['stageScore'][stage-1]+=exData.score;
 			deleteAll = exData.enId;
 			array.push(index);
 			this.addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*10],width:[exData.size*100,0],color:exData.color,dir:exData.edir});
@@ -663,7 +637,6 @@ class enemyAll extends drawAll {
        		audioElem['enemy_crash'].play();
        		if(exData.boss) {
        			StageEnd();
-       			stageConst();
        			this.addEffect({costume:'circle',X:exData.X,Y:exData.Y,size:[1,exData.size*50],width:[exData.size*500,0],color:exData.color,dir:exData.edir});
        			this.addEffect({costume:'circle',X:exData.X,Y:exData.Y,size:[1,exData.size*100],width:[exData.size*1000,0],color:exData.color,dir:0});
        		}
@@ -720,7 +693,7 @@ class laserAll extends drawAll {
 		this.move(exData.speed,exData.ldir,exData);
 	}
 	delete(array,index) {
-		if(exData.deleteMessage && deleteAll == exData.enId || index <= number.laserdel) {exData.typeNumber = 2; exData.alpha = 1;}
+		if(exData.deleteMessage && deleteAll == exData.enId || index <= number.laserdel || player.bomb > 0) {exData.typeNumber = 2; exData.alpha = 1;}
 	}
 }
 
@@ -728,11 +701,14 @@ class laserAll extends drawAll {
 class effectAll extends drawAll {
 	PrptUpdate() {
 		exData.width_2[0] = exData.width[tn] - exData.width_2[1];
-		exData.width_2[1] += exData.width_2[0]/6;
+		exData.width_2[1] += exData.width_2[0]/exData.ch_speed;
 		exData.size_2[0] = exData.size[tn] - exData.size_2[1];
-		exData.size_2[1] += exData.size_2[0]/6;
+		exData.size_2[1] += exData.size_2[0]/exData.ch_speed;
 		exData.alpha_2[0] = exData.alpha[tn] - exData.alpha_2[1];
-		exData.alpha_2[1] += exData.alpha_2[0]/6;
+		exData.alpha_2[1] += exData.alpha_2[0]/exData.ch_speed;
+		exData.tdir +=  exData.dir_accele /5;
+		exData.speed +=  exData.accele / 100;
+		exData.dir_accele += exData.dir_accele_2/5;
 	}
 	dr() {
 		this.PrptUpdate();
@@ -745,19 +721,16 @@ class effectAll extends drawAll {
 			exData.dir += 0.1;
 			exData.alpha_2[1] =  Math.abs(Math.cos(exData.dir));
 			break;
+			case 'text':
+			if(typeof exData.bake !== 'undefined') {
+				exData.bake--;
+				exData.interval[tn][0] += exData.interval[tn][1];
+				if(exData.bake <= 0 && rndm(0,exData.interval[tn][0]) == 0) {
+					exData.bake = rndm(1,5);
+				}
+			}
+			break;
 
 		}
 	}
-}
-
-function HPbar(x,y,hp,max,width,height,value,color='#fff') {
-	func.draw({X:[x,x+width],Y:[y,y],st:true,wid:height,st_style:'#999999',circle:false});
-	func.draw({X:[x,x+hp*width/max],Y:[y,y],st:true,wid:height,st_style:color,circle:false});
-	ctx.font = '15px Courier','15px sans-serif';
-	ctx.fillStyle = '#fff';
-	value && ctx.fillText(bossData.hp,x+width/2.5,y+4);
-}
-async function feed(sec = 0,pr,obj) {
-	await sleepByPromise(sec);
-	obj[pr]++;
 }
