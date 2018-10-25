@@ -1,4 +1,5 @@
-function game(stage) {
+async function game(stage,sec) {
+	await sleepByPromise(sec);
 	switch (stage) {
 		case 1:
 		stage1();
@@ -13,6 +14,7 @@ function game(stage) {
 }
 function stage1() {
 	bgm(2,'sumia.mp3');
+	
 	for(let i = 0; i <= 3; i++) {
 		add_enemy({X:100,Y:0,speed:2,shooter:[
 			[{st_dir:0,count:1,speed:0.5,accele:1,costume:'strange'},
@@ -41,12 +43,12 @@ function stage1() {
 		add_enemy({X:300,Y:0,color:'#6481cd',shooter:[[{count:5,rota:30,st_dir:135,speed:1,accele:1,dir_accele:1}]],speed:2,type:[1],interval:[[100,100]],hp:5},i+12);
 	}
 
-	add_enemy({X:20,Y:0,color:'#fff',shooter:[[{count:1,st_dir:0,speed:1,laser:true,changeCond:[{cond:2,down:1},{cond:2,down:460},{cond:2,down:10}],shift:30,deleteMessage:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2}],[{}]],speed:1,accele:0,type:[1,0,1,0],interval:[[10,5000],[0,0],[80,80],[0,0]],changeCond:[{cond:2,down:25},{cond:3,hp:29,speed:0.5,accele:0.15,delAll:true,color:thema,costume:'enemy_2'},{cond:2,down:500,chase:true},{cond:0}],hp:30},20);
-	add_enemy({X:400,Y:0,color:'#fff',shooter:[[{count:1,st_dir:180,speed:1,laser:true,changeCond:[{cond:2,down:1},{cond:2,down:460},{cond:2,down:10}],shift:30,deleteMessage:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2}],[{}]],speed:1,accele:0,type:[1,0,1,0],interval:[[10,5000],[0,0],[80,80],[0,0]],changeCond:[{cond:2,down:25},{cond:3,hp:29,speed:0.5,accele:0.15,delAll:true,color:thema,costume:'enemy_2'},{cond:2,down:500,chase:true},{cond:0}],hp:30},22);
+	add_enemy({X:20,Y:0,color:'#fff',shooter:[[{count:1,st_dir:0,speed:1,laser:true,changeCond:[{cond:2,down:1},{cond:2,down:460},{cond:2,down:10}],shift:30,deleteMessage:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2}],[{}]],speed:1,accele:0,type:[1,0,1,0],interval:[[10,5000],[0,0],[80,80],[0,0]],changeCond:[{cond:2,down:25},{cond:3,hp:29,speed:0.5,accele:0.15,delAll:true,color:theme,costume:'enemy_2'},{cond:2,down:500,chase:true},{cond:0}],hp:30},20);
+	add_enemy({X:400,Y:0,color:'#fff',shooter:[[{count:1,st_dir:180,speed:1,laser:true,changeCond:[{cond:2,down:1},{cond:2,down:460},{cond:2,down:10}],shift:30,deleteMessage:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2}],[{}]],speed:1,accele:0,type:[1,0,1,0],interval:[[10,5000],[0,0],[80,80],[0,0]],changeCond:[{cond:2,down:25},{cond:3,hp:29,speed:0.5,accele:0.15,delAll:true,color:theme,costume:'enemy_2'},{cond:2,down:500,chase:true},{cond:0}],hp:30},22);
 
 	for(let i = 0; i <= 4; i++) {
-		add_enemy({X:250+(i%2*50),Y:0,color:'#fff',shooter:[[{count:1,st_dir:180,speed:1,laser:true,changeCond:[{cond:2,down:1},{cond:2,down:460},{cond:2,down:10}],shift:30,deleteMessage:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2}],[{}]],speed:1,accele:0,type:[1,0,1,0],interval:[[10,5000],[0,0],[80,80],[0,0]],changeCond:[{cond:2,down:25},{cond:3,hp:39,speed:0.5,accele:0.15,delAll:true,color:thema,costume:'enemy_2'},{cond:2,down:500,chase:true},{cond:0}],hp:40},i*4+25);
-		add_enemy({X:150-(i%2*50),Y:0,color:'#fff',shooter:[[{count:1,st_dir:0,speed:1,laser:true,changeCond:[{cond:2,down:1},{cond:2,down:460},{cond:2,down:10}],shift:30,deleteMessage:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2}],[{}]],speed:1,accele:0,type:[1,0,1,0],interval:[[10,5000],[0,0],[80,80],[0,0]],changeCond:[{cond:2,down:25},{cond:3,hp:39,speed:0.5,accele:0.15,delAll:true,color:thema,costume:'enemy_2'},{cond:2,down:500,chase:true},{cond:0}],hp:40},i*4+27);
+		add_enemy({X:250+(i%2*50),Y:0,color:'#fff',shooter:[[{count:1,st_dir:180,speed:1,laser:true,changeCond:[{cond:2,down:1},{cond:2,down:460},{cond:2,down:10}],shift:30,deleteMessage:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2}],[{}]],speed:1,accele:0,type:[1,0,1,0],interval:[[10,5000],[0,0],[80,80],[0,0]],changeCond:[{cond:2,down:25},{cond:3,hp:39,speed:0.5,accele:0.15,delAll:true,color:theme,costume:'enemy_2'},{cond:2,down:500,chase:true},{cond:0}],hp:40},i*4+25);
+		add_enemy({X:150-(i%2*50),Y:0,color:'#fff',shooter:[[{count:1,st_dir:0,speed:1,laser:true,changeCond:[{cond:2,down:1},{cond:2,down:460},{cond:2,down:10}],shift:30,deleteMessage:true}],[{}],[{count:3,rota:120,st_dir:rndm(0,360),rotaRate:50,speed:0,accele:0.2}],[{}]],speed:1,accele:0,type:[1,0,1,0],interval:[[10,5000],[0,0],[80,80],[0,0]],changeCond:[{cond:2,down:25},{cond:3,hp:39,speed:0.5,accele:0.15,delAll:true,color:theme,costume:'enemy_2'},{cond:2,down:500,chase:true},{cond:0}],hp:40},i*4+27);
 	}
 	for(let i = 0; i<= 9; i++) {
 		add_enemy({X:0,Y:100,dir:0,color:'#fff',shooter:[[{count:5,rota:10,speed:1,accele:0.1,zikimuke:true,rotaRate:-20}]],speed:2,type:[1],interval:[[100,100]],hp:5},i*2+25);
@@ -81,6 +83,7 @@ function stage1() {
 			],
 		interval:[[0,0],[60,60]],type:[0,1],changeCond:[{cond:4,y:100,speed:1,accele:0},{cond:0}]},i*4+54);
 	}
+	
 	BossComing(71,1);
 }
 
@@ -140,9 +143,16 @@ async function BossComing(sec = 0,stage = 1) {
 	func.addEffect({X:75,Y:200,costume:'warning',changeCond:[{cond:2,down:480},{cond:2,down:20}],size:[30,0]});
 	serifData(`boss${stage}`);
 	del();
-	bossData = {maxhp:250,level:0,d1:new Date(),d2:new Date()};
+	bossData = {d1:new Date(),d2:new Date()};
 	switch(stage) {
 		case 1:
+		bossData.name = 'Dalet';
+		bossData.id = 'שמונה-עשר';
+		bossData.level = 'תשע';
+		bossData.maxhp = 250;
+		bossData.Firstform = ''; 
+		bossData.Secondform = ''; 
+		bossData.TargetTime = 70;
 		bgm(9,'akka.mp3');
 		add_enemy({X:200,Y:0,
 			shooter:[[{}],
@@ -154,11 +164,17 @@ async function BossComing(sec = 0,stage = 1) {
 			[{count:12,rota:30,interval:[[20,20]],st_dir:90,speed:2,accele:0.5,dir_accele:1,type:[1],size:30,costume:'big_bullet',Addval:300,reverse:2,deleteMessage:true},
 			],
 			[{}]],
-		speed:2,accele:0.1,score:100000,boss:true,changeCond:[{cond:1,x:200,y:100,speed:0,accele:0},{cond:3,hp:125,delAll:true},{cond:2,down:50},{cond:3,hp:0,delAll:true}],type:[0,1,0,1,0],interval:[[0,0],[35,35],[0,0],[1,250],[0,0]],hp:250,size:10},9);
+		speed:2,accele:0.1,score:1000000,boss:true,changeCond:[{cond:1,x:200,y:100,speed:0,accele:0},{cond:3,hp:125,delAll:true},{cond:2,down:50},{cond:3,hp:0,delAll:true}],type:[0,1,0,1,0],interval:[[0,0],[35,35],[0,0],[1,250],[0,0]],hp:250,size:10},9);
 		break;
 
 		case 2:
-
+		bossData.maxhp = 500;
+		bossData.name = 'Yud';
+		bossData.id = 'אחדתשע-אחדתשע';
+		bossData.level = 'חמישה';
+		bossData.Firstform = ''; 
+		bossData.Secondform = '';
+		bossData.TargetTime = 100;
 		bgm(9,'m-art_IntoTheWonderland.mp3');
 		add_enemy({X:200,Y:0,costume:'star_boss',
 			shooter:[
@@ -175,8 +191,11 @@ async function BossComing(sec = 0,stage = 1) {
 			[{}],
 			[{}]
 			],
-		speed:2,accele:0.1,score:100000,boss:true,changeCond:[{cond:1,x:200,y:200,speed:0,accele:0},{cond:3,hp:400,delAll:true},{cond:2,down:4},{cond:3,hp:0,delAll:true}],type:[0,1,0,1,0],interval:[[0,0],[1,350],[0,0],[1,1000],[0,0]],hp:500,size:7},9);
+		speed:2,accele:0.1,score:1000000,boss:true,changeCond:[{cond:1,x:200,y:200,speed:0,accele:0},{cond:3,hp:350,delAll:true},{cond:2,down:4},{cond:3,hp:0,delAll:true}],type:[0,1,0,1,0],interval:[[0,0],[1,350],[0,0],[1,1000],[0,0]],hp:500,size:7},9);
 
+		case 3:
+		bossData.maxhp = 500;
+		bossData.name = 'Efes';
 		break;
 	}
 }
