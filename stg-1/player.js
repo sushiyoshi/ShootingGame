@@ -15,10 +15,17 @@ function playerAll() {
 	    player.Y < 20 && (player.pY = 20);
 	    player.Y > 460 && (player.Y = 460);
 	    player.shot--;
+	    player.bomb--;
 	    player.ghost--;
 	    if(input_key_buffer[90] && player.shot < 0) {
 			Shot(player.X,player.Y,input_key_buffer[16]);
 	    	player.shot = 10;
+	   	}
+	   	if(player.bombCount > 0 && input_key_buffer[88] && player.bomb < 0) {
+	   		bombAdd(player.X,player.Y);
+	   		player.bomb = 350;
+	   		player.bombCount--;
+
 	   	}
 	} else {
 		player.Y += (350-player.Y)/25;
@@ -71,4 +78,7 @@ function playerDraw(x,y,size,anim,alpha,cl='#eab500',circle = false) {
 	func.draw({alpha:alpha,X:[x+size*0.3,x+size,x+size*0.8],Y:[y-size,y-a,y-size*0.3],st:true,circle:false,wid:size*0.2,st_style:cl});
 	circle && func.draw({wid:size*0.3,alpha:alpha,X:x,Y:y,siz:3,fil:true,st:true,st_style:cl,fil_style:'#fff'})
 
+}
+function bombAdd(x,y) {
+	func.addEffect({ch_speed:20,costume:'bomb',dir_accele:5,X:x,Y:y,size:[200,500],width:[5,5],alpha:[0,1],changeCond:[{cond:2,down:300},{cond:2,down:40}]})
 }
