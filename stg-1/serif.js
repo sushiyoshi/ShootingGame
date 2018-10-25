@@ -1,4 +1,5 @@
 function serifAll() {
+	ctx.textAlign = "start";
 	SerifResult = [];
 	SerifElem.r = "";
 	serifDisplay(SerifElem.num,SerifElem.length-1);
@@ -28,7 +29,9 @@ function serifAll() {
 			ctx.fillText(value,428+xx,200+index*20+yy);
 		}
 	});
-	wireless(440,290,SerifElem.length % 2);
+	if(!(SerifElem.bake > 0 && rndm(0,10) == 0)){
+		wireless(440,285,Math.floor(SerifElem.length % 8 / 4));
+	}
 
 }
 function isHanEisu(str) {
@@ -111,9 +114,28 @@ function bake(length) {
 function serifDisplay(n,l) {
 	for(let i = 0; i < l; i++) SerifElem.r += Serif[n]['str'][i];
 }
+async function feed(sec = 0,pr,obj) {
+	await sleepByPromise(sec);
+	obj[pr]++;
+}
 function wireless(x,y,anim){
-	//func.draw({st:true,circle:false,X:[x-10,x+10,x+10,x-10],Y:[y+20,y+20,y-20,y-20],close:true,alpha:1});
-	ctx.globalAlpha = 1;
-	ctx.strokeStyle = '#fff';
-	ctx.strokeRect(x-10,y-10,20,40);
+	func.draw({st:true,circle:false,X:[x-10,x+10,x+10,x-10],Y:[y+35,y+35,y-10,y-10],close:true});
+	func.draw({st:true,circle:false,X:[x-8,x+8,x+8,x-8],Y:[y+25+anim*3,y+25+anim*3,y+15-anim*5,y+15-anim*5],close:true});
+	func.draw({st:true,circle:false,X:[x-8,x+8,x+8,x-8],Y:[y+3,y+3,y-5,y-5],close:true});
+
+	func.draw({st:true,circle:false,X:[x-10,x-5],Y:[y+25+anim*3,y+15-anim*5]});
+	func.draw({st:true,circle:false,X:[x-5,x],Y:[y+25+anim*3,y+15-anim*5]});
+	func.draw({st:true,circle:false,X:[x+5,x+10],Y:[y+25+anim*3,y+15-anim*5]});
+	func.draw({st:true,circle:false,X:[x,x+5],Y:[y+25+anim*3,y+15-anim*5]});
+
+	func.draw({st:true,circle:false,X:[x-5,x-5],Y:[y-10,y-25]});
+
+	func.draw({st_style:'#eab500',st:true,circle:false,X:[x-6+anim*2,x-4+anim*2,x-2+anim*2],Y:[y+1,y-1,y+1],close:true});
+
+	func.draw({fil_style:'#eab500',fil:true,X:x-5,Y:y-25,siz:3});
+/*
+	func.draw({st:true,circle:false,X:[x+10,x+5],Y:[y+25+anim*5,y+15-anim*5]});
+	func.draw({st:true,circle:false,X:[x+5,x],Y:[y+25+anim*5,y+15-anim*5]});
+	func.draw({st:true,circle:false,X:[x,x-5],Y:[y+25+anim*5,y+15-anim*5]});
+	func.draw({st:true,circle:false,X:[x-5,x-10],Y:[y+25+anim*5,y+15-anim*5]});*/
 }
