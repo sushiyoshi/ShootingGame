@@ -19,12 +19,12 @@ function StageEnd() {
 	del();
 	player.hp <= 0 && (player.hp = 0);
 	let record = bossData.TargetTime < bossTime() ? bossData.TargetTime : bossTime();
-	let bonus = player.hp*(player.graze+Math.floor(bossData.TargetTime-record)*5)*10000;
+	let bonus = player.hp*(player.graze+Math.floor(bossData.TargetTime-record)*5)*100000;
+	player.stageScore[stage-1] += bonus;
 	func.addEffect({X:200,Y:150,dir:270,alpha:[0,1,1,0],costume:'text',color:'#fff',text:`Interval score:${player['stageScore'][stage-1]}`,algin:"center",font:'25px Courier',color:'#eab500',changeCond:[{cond:2,down:1,speed:2,accele:-4},{cond:4,y:100,speed:0,accele:0},{cond:2,down:350,speed:1,accele:4},{cond:0}]});
 	func.addEffect({X:200,Y:175,dir:270,alpha:[0,1,1,0],costume:'text',text:player.hp > 0 ? `Boss Breaking Bonus +${bonus}` : 'No Bonus...',algin:"center",font:'22px Courier',changeCond:[{cond:2,down:20,speed:2,accele:-4},{cond:4,y:125,speed:0,accele:0},{cond:2,down:330,speed:1,accele:4},{cond:0}]});
 	func.addEffect({X:200,Y:200,dir:270,alpha:[0,1,1,0],costume:'text',color:'#fff',text:`graze:${player.graze}`,algin:"center",font:'20px Courier',changeCond:[{cond:2,down:40,speed:2,accele:-4},{cond:4,y:150,speed:0,accele:0},{cond:2,down:310,speed:1,accele:4},{cond:0}]});
 	func.addEffect({X:200,Y:225,dir:270,alpha:[0,1,1,0],costume:'text',color:'#fff',text:`BossBreakingTime:${record}`,algin:"center",font:'20px Courier',changeCond:[{cond:2,down:40,speed:2,accele:-4},{cond:4,y:175,speed:0,accele:0},{cond:2,down:310,speed:1,accele:4},{cond:0}]});
-	player.score += bonus;
 	player.graze = 0;
 	player.hp = 5;
 	boss = false;
@@ -63,7 +63,7 @@ var enAll = new enemyAll(enemy,{
 	hp:20,
 	costume:'enemy',
 	collision:20,
-	score:10000,
+	score:100000,
 	changeCond:[{cond:0}],
 	boss:false,
 	audio:true
@@ -119,6 +119,7 @@ var all = function() {
 		ctx.globalAlpha = 1;
 		ctx.fillStyle = '#000000';
 		ctx.fillRect(0,0,canvas.width,canvas.height);
+		backgroundDraw();
 		enAll.loop();
 		en_btAll.loop();
 		lsrAll.loop();
@@ -154,3 +155,10 @@ const isCrossLines = (a, b, c, d) => {
 
     return stack[0] * stack[1] < 0 && stack[2] * stack[3] < 0;
 };
+function backgroundDraw() {
+	if(rndm(0,10) == 0 && !boss) {
+		console.log('aa');
+		const circleSize = rndm(2,4);
+		func.addEffect({changeCond:[{cond:0}],costume:'circle_2',X:rndm(15,395),Y:0,size:[circleSize],speed:circleSize*1,color:'#fff',alpha:[0.6],dir:90});
+	}
+}
