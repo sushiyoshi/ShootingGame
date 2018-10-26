@@ -36,7 +36,7 @@ function stage1() {
 
 	add_enemy({X:200,Y:0,dir:func.angle(200,0,300,200),shooter:[[{}],[{deleteMessage:true,laser:true,count:5,rota:72,shift:50,changeCond:[{cond:2,down:160,dir_accele:1},{cond:2,down:100,dir_accele:0},{cond:2,down:10}]}]],speed:2,accele:0.1,changeCond:[{cond:1,x:300,y:200,dir:90,speed:0,accele:0},{cond:2,speed:1,accele:0.4,down:200},{cond:4,y:500}],type:[0,1,0],interval:[[0,0],[10,200],[0,0]],hp:20},12);
 	add_enemy({X:200,Y:0,dir:func.angle(200,0,100,200),shooter:[[{}],[{deleteMessage:true,laser:true,count:5,rota:72,shift:50,changeCond:[{cond:2,down:160,dir_accele:1},{cond:2,down:100,dir_accele:0},{cond:2,down:10}]}]],speed:2,accele:0.1,changeCond:[{cond:1,x:100,y:200,dir:90,speed:0,accele:0},{cond:2,speed:1,accele:0.4,down:200},{cond:4,y:500}],type:[0,1,0],interval:[[0,0],[10,200],[0,0]],hp:20},12);
-	add_enemy({score:500,X:200,Y:0,size:5,dir:func.angle(200,0,200,100),shooter:[[{}],[{deleteMessage:true,laser:true,shift:50}]],speed:2,accele:0.1,changeCond:[{cond:1,x:200,y:100,dir:90,speed:0,accele:0},{cond:2,speed:1,accele:0.4,down:200},{cond:4,y2:500}],type:[0,1,0],interval:[[0,0],[10,200],[0,0]],hp:20},14);
+	add_enemy({score:100000,X:200,Y:0,size:5,dir:func.angle(200,0,200,100),shooter:[[{}],[{deleteMessage:true,laser:true,shift:50}]],speed:2,accele:0.1,changeCond:[{cond:1,x:200,y:100,dir:90,speed:0,accele:0},{cond:2,speed:1,accele:0.4,down:200},{cond:4,y2:500}],type:[0,1,0],interval:[[0,0],[10,200],[0,0]],hp:20},14);
 
 	for(let i = 1; i <= 3; i++) {
 		add_enemy({X:100,Y:0,color:'#6481cd',shooter:[[{count:5,rota:30,st_dir:270,speed:1,accele:1,dir_accele:1}]],speed:2,type:[1],interval:[[100,100]],hp:5},i+12);
@@ -133,6 +133,7 @@ function stage2() {
 }
 function stage3() {
 	bgm(2,'m-art_rule90.mp3');
+	add_enemy({X:100,Y:0,costume:'enemy_5',accele:0.4})
 
 }
 async function BossComing(sec = 0,stage = 1) {
