@@ -1,13 +1,11 @@
 function frame (){
 	ctx.textAlign = 'start';
 	ctx.globalAlpha = 1;
-	//↑ここ見て！！！直前にちゃんと1って指定してるのに！！！
 	ctx.fillStyle = '#000000';
 	ctx.fillRect(400, 0, canvas.width, canvas.height);
 	ctx.fillRect(0,0, canvas.width,20);
 	ctx.fillRect(0,460, canvas.width, canvas.height);
 	ctx.fillRect(0,0, 20, canvas.height);
-	//↑ここがたまに透明になる！！！
 	func.draw({circle:false,alpha:0.7,st:true,X:[20,400,400,20,20],Y:[20,20,460,460,20]});
 
 	ctx.font = 'italic 15px Courier','15px sans-serif';
@@ -26,7 +24,7 @@ function frame (){
 	ctx.fillText(player.graze,420,170);
 	for(let i = 0; i<player.hp; i++) playerDraw(430+i*30,88,7,player.anim,1,'#eab500',false);
 	for(let i = 0; i<player.bombCount; i++) bombCountDraw(430+i*30,123,5,player.anim,1,'#eab500',false);
- 	title(515,410,theme);
+ 	title(515,410,themeList[stage]);
 	SerifElem.waku_2 += (SerifElem.waku - SerifElem.waku_2)/10;
 	func.draw({alpha:0.7,st:true,circle:false,X:[420,630,630,420],Y:[180,180,SerifElem.waku_2,SerifElem.waku_2],close:true});
 	if(Serif[SerifElem.num]!== undefined ){
@@ -45,9 +43,10 @@ let test_2 = [45,27,90];
 function bossInfo() {
 	ctx.textAlign = 'start';
 	//siz,ty,cl,X,Y,di,alpha,wid,circle = false;
-	let bossCos = ['enemy','star_boss','enemy'];
-	func.DrawingMethod(8-stage*2,bossCos[stage-1],theme,495,260,bossData.dir,0.7,1);
+	let bossCos = ['enemy','star_boss','enemy_5'];
+	stage != 2 ? func.DrawingMethod(8,bossCos[stage-1],theme,495,260,bossData.dir,0.7,1) : func.DrawingMethod(4,bossCos[stage-1],theme,495,260,bossData.dir,0.7,1);
 	HPbar(460,310,bossData.hp,bossData.maxhp,160,10,true,theme);
+	//func.DrawingMethod(8,bossCos[stage-1],theme,495,260,bossData.dir,0.7,1) 
 
 	ctx.font = '11px Courier','11px sans-serif';
 	ctx.globalAlpha = 1;
@@ -68,12 +67,12 @@ function bossInfo() {
 
 	ctx.textAlign = "start";
 	ctx.fillStyle = '#fff';
-	ctx.fillText('TIME ATTACK:',430,325);
+	ctx.fillText('TIME ATTACK:',430,328);
 	ctx.font = '15px Courier','15px sans-serif';
 	ctx.fillText('HP:',430,315);
 	ctx.fillStyle = '#eab500';
 	ctx.fillText('Week Point',530,210);
-	ctx.fillText(bossTime(),510,325);
+	ctx.fillText(bossTime(),510,328);
 	func.draw({wid:3,circle:false,X:[530,510,500],Y:[210,210,240],st:true,alpha:0.7,st_style:'#eab500'});
 }
 
