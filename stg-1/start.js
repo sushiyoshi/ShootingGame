@@ -20,7 +20,7 @@ let tn = 0;　//exData.typeNumberの値を入れてる。いちいち記述す�
 let theme;//ゲーム全体の色を決める。ステージごとに変わる。
 let bossData = {d1:new Date(),d2:new Date()};//ボス情報表示。
 let stage =	0;//ステージ番号
-let themeList = ["#b000a3","#00af00","#39A0DA"];//左からステージ1、ステージ2、ステージ3のテーマ。
+let themeList = ['#fff',"#b000a3","#00af00","#39A0DA"];//左からステージ1、ステージ2、ステージ3のテーマ。
 let SerifElem = {num:0,length:1,r:"",max:14,bake:0,waku:320,waku_2:180}
 //num:処理する台詞の要素番号　length:表示する台詞の文字数　r:行分け前の台詞　max:一行に表示できる文字数　bake:文字化け　waku:枠の幅
 let Serif = []//台詞データ
@@ -37,8 +37,10 @@ let audioElem = {
 	graze:new Audio("audio/automatic_pencil1.mp3"),
 	address:new Audio("audio/magic_wave3.mp3"),
 	laser:new Audio("audio/laser.mp3"),
-	star_crash:new Audio("audio/sen_fa_maho_kougeki06.mp3")
+	star_crash:new Audio("audio/sen_fa_maho_kougeki06.mp3"),
+	bomb:new Audio("audio/sen_fa_maho_kougeki05.mp3")
 }//bgm,効果音
+let audioLoading = 0;
 let boss;//ボス真偽
 let tempo = 7;//猫耳ぴょこぴょこの速さ　音楽に合わせて変化させたい
 let bombInfo = {size:0,X:0,Y:0};//未実装ボム
