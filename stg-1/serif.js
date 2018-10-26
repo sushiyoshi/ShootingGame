@@ -81,6 +81,35 @@ function serifData(p) {
 		addSerif({str:"新しい武器と回線の耐ウイルスプログラムを送る。",wait:6,speed:0.02});
 		addSerif({str:"少しでも役に立ててくれ。",wait:3,speed:0.02});
 		addSerif({str:"兵装「ワクチンデストロイヤー」プログラムをインストールしました。",wait:4,speed:0.02,color:'#00ff00'});
+		break;
+		case 'boss2':
+		addSerif({str:"非常に高いウイルス反応がある。",wait:2,speed:0.03});
+		addSerif({str:"さっきのものと少し似ているが微妙に違う。",wait:2,speed:0.03});
+		addSerif({str:"おそらく前回戦った時の敵よりも能力が高い個体だ。",wait:2,speed:0.03});
+		addSerif({str:"十分に気をつけてくれ。",wait:2,speed:0.03});
+		break;
+		case 3:
+		addSerif({str:"ここはウイルスの汚染濃度が高い。",wait:3,shake:true,speed:0.03});
+		addSerif({str:"おそらく通信できるのもここまでだろう。",wait:3,speed:0.03,bake:true,shake:true});
+		addSerif({str:"ここからはサポートできなくなると思うが。",wait:3,speed:0.03,bake:true,shake:true});
+		addSerif({str:"ここまでいけた君ならできるはずだ。",wait:3,speed:0.03,bake:true,shake:true});
+		addSerif({str:"健闘を祈る。",wait:0.5,speed:0.03,bake:true,shake:true});
+		addSerif({str:bake(12),wait:1,speed:0.01,bake:true,shake:true});
+		addSerif({str:"接続がタイムアウトになりました。",wait:5,speed:0.02,color:'#00ff00'});
+		break;
+		case 'end':
+		addSerif({str:"ウイルス検査中...",wait:4,speed:0.03,color:'#00ff00'});
+		addSerif({str:"ウイルス反応消失",wait:1,speed:0.03,color:'#00ff00'});
+		addSerif({str:"マザーウイルス Win killer meの駆除を確認",wait:2,speed:0.03,color:'#00ff00'});
+		addSerif({str:"AIプログラムをウイルスソフトにスキャンします...",wait:3,speed:0.03,color:'#00ff00'});
+		addSerif({str:"AIプログラムに異常は見つかりませんでした。",wait:4,speed:0.03,color:'#00ff00'});
+		addSerif({str:"どうやら異常はないみたいだ。",wait:3,speed:0.03});
+		addSerif({str:"急造品の武器だけで決行した無茶な作戦だったが、よくここまで戦ってくれた。",wait:3,speed:0.03});
+		addSerif({str:"これでウイルスの脅威も去った。",wait:3,speed:0.03});
+		addSerif({str:"これから君の回収に入る。",wait:3,speed:0.03});
+		addSerif({str:"お疲れ様。",wait:3,speed:0.03});
+		break;
+
 	}
 	SerifSet();
 }
