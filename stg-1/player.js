@@ -23,7 +23,7 @@ function playerAll() {
 	   	}
 	   	if(player.bombCount > 0 && input_key_buffer[88] && player.bomb < 0) {
 	   		bombAdd(player.X,player.Y);
-	   		player.bomb = 350;
+	   		player.bomb = 250;
 	   		player.bombCount--;
 
 	   	}
@@ -80,5 +80,10 @@ function playerDraw(x,y,size,anim,alpha,cl='#eab500',circle = false) {
 
 }
 function bombAdd(x,y) {
-	func.addEffect({ch_speed:20,costume:'bomb',dir_accele:5,X:x,Y:y,size:[200,500],width:[5,5],alpha:[0,1],changeCond:[{cond:2,down:300},{cond:2,down:40}]})
+	player.stageScore[stage-1] += 50000;
+	func.addEffect({ch_speed:20,color:'#fff',costume:'bomb',dir_accele:5,X:x,Y:y,size:[200,500],width:[5,5],alpha:[0,1],changeCond:[{cond:2,down:200},{cond:2,down:40}]})
+}
+
+function bombCountDraw(x,y,size,anim,alpha,cl='#eab500') {
+	func.draw({alpha:alpha,circle:false,X:[x,x+Math.cos(func.rad(anim))*size*1.3,x,x-Math.cos(func.rad(anim))*size*1.3],Y:[y-size,y,y+size*1.3,y],st:true,siz:size,wid:size*0.2,st_style:cl,close:true})
 }
