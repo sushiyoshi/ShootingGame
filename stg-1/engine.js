@@ -222,6 +222,7 @@ class Func {
 	 		//touchLs = this.dis_laser(player.X,player.Y,X,Y,X + Math.cos(this.rad(di))*400,Y + Math.sin(this.rad(di))*400) < wid*1.5;
 	 		touchLs = isCrossLines({x:X,y:Y},{x:X + Math.cos(this.rad(di))*400,y:Y + Math.sin(this.rad(di))*400},{x:player.X+player.spX/2,y:player.Y+player.spY/2},{x:player.X-player.spX/2,y:player.Y-player.spY/2});
 	 		tn == 1 && this.graze(this.dis_laser(player.X,player.Y,X,Y,X + Math.cos(this.rad(di))*400,Y + Math.sin(this.rad(di))*400) < wid*1.5 && this.dis_laser(player.X,player.Y,X,Y,X + Math.cos(this.rad(di))*400,Y + Math.sin(this.rad(di))*400) < wid*20,false);
+	 		if(touchLs ) {console.log(tn); exData.test = true;}
 	 		circle && this.draw({fil:true,alpha:alpha,siz:5});
 	 		circle && (tn == 1 ? this.draw({st:true,siz:wid,st_style:cl,wid:wid/1.8,alpha:0.5}) : this.draw({st:true,siz:wid,st_style:cl,wid:wid/1.8,alpha:alpha}))
 			ctx.beginPath();
@@ -266,6 +267,10 @@ class Func {
 			this.DrawingMethod (siz*1.5,'star',cl,X,Y,di,0.7,wid);
 			this.draw({alpha:alpha,wid:siz*3.6,fil_style:'#000000',siz:siz*3,st:true,fil:true,X:X,Y:Y});
 			break;
+			case 'enemy_5':
+			this.draw({siz:siz*7+1+Math.cos(this.rad(di*5))*1.5,st_style:cl,st:true,wid:siz*1.5});
+			this.draw({alpha:alpha,wid:siz*2,fil_style:'#000',fil:true,st:true,siz:siz*2.5});
+			break;
 			//2面ボス
 			case 'star_boss':
 			this.DrawingMethod (siz,'star',cl,X,Y,di,alpha,wid);
@@ -285,6 +290,9 @@ class Func {
 			//円
 			case 'circle':
 			this.draw({wid:wid,st_style:cl,st:true,siz:siz});
+			break;
+			case 'circle_2':
+			this.draw({wid:wid,fil_style:cl,fil:true,siz:siz,alpha:alpha});
 			break;
 			//判定なしの弾
 			case 'bullet_circle':
@@ -314,11 +322,11 @@ class Func {
 			bombInfo.X = exData.X;
 			bombInfo.Y = exData.Y;
 			bombInfo.size = exData.size_2[1];
-			func.draw({circle:false,st:true,cl:'#fff',wid:5,close:true,
+			func.draw({circle:false,st:true,st_style:cl,wid:5,close:true,
 				X:[X+Math.cos(this.rad(di))*siz,X+Math.cos(this.rad(di+45))*siz,X+Math.cos(this.rad(di+90))*siz,X+Math.cos(this.rad(di+135))*siz,X+Math.cos(this.rad(di+180))*siz,X+Math.cos(this.rad(di+225))*siz,X+Math.cos(this.rad(di+270))*siz,X+Math.cos(this.rad(di+315))*siz],
 				Y:[Y+Math.sin(this.rad(di))*siz,Y+Math.sin(this.rad(di+45))*siz,Y+Math.sin(this.rad(di+90))*siz,Y+Math.sin(this.rad(di+135))*siz,Y+Math.sin(this.rad(di+180))*siz,Y+Math.sin(this.rad(di+225))*siz,Y+Math.sin(this.rad(di+270))*siz,Y+Math.sin(this.rad(di+315))*siz],
 			});
-			func.draw({circle:false,st:true,cl:'#fff',wid:5,close:true,
+			func.draw({circle:false,st:true,st_style:cl,wid:5,close:true,
 				X:[X+Math.cos(this.rad(di*-1))*siz,X+Math.cos(this.rad(di*-1+45))*siz,X+Math.cos(this.rad(di*-1+90))*siz,X+Math.cos(this.rad(di*-1+135))*siz,X+Math.cos(this.rad(di*-1+180))*siz,X+Math.cos(this.rad(di*-1+225))*siz,X+Math.cos(this.rad(di*-1+270))*siz,X+Math.cos(this.rad(di*-1+315))*siz],
 				Y:[Y+Math.sin(this.rad(di*-1))*siz,Y+Math.sin(this.rad(di*-1+45))*siz,Y+Math.sin(this.rad(di*-1+90))*siz,Y+Math.sin(this.rad(di*-1+135))*siz,Y+Math.sin(this.rad(di*-1+180))*siz,Y+Math.sin(this.rad(di*-1+225))*siz,Y+Math.sin(this.rad(di*-1+270))*siz,Y+Math.sin(this.rad(di*-1+315))*siz],
 			});
@@ -460,8 +468,8 @@ class drawAll extends Func {
 		//chaseがtrueの時自機を追いかける
        	exData['changeCond'][tn]['chase'] && (exData.dir = this.angle(exData.X,exData.Y,player.X,player.Y));
        	//drawAllを継承したクラスがこの空メソッドをオーバーライドして特別な処理をする。無理やり多態性を実装。
-       	typeof this.special !== 'undefined' && this.special();
        	this.dr();
+       	typeof this.special !== 'undefined' && this.special();
        	if(exData.interval[tn][0] == 0) {
        		//任意の間隔で行われる処理。この処理もクラスによって違う。
        		exData.interval[tn][0] = exData.interval[tn][1];
@@ -631,8 +639,8 @@ class enemyAll extends drawAll {
 			if(exData.hp < 0) player['stageScore'][stage-1]+=exData.score;
 			deleteAll = exData.enId;
 			array.push(index);
-			this.addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*10],width:[exData.size*100,0],color:exData.color,dir:exData.edir});
-       		this.addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*20],width:[exData.size*200,0],color:exData.color,dir:0});
+			this.addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*10,1],width:[exData.size*100,0],color:exData.color,dir:exData.edir});
+       		this.addEffect({X:exData.X,Y:exData.Y,size:[1,exData.size*20,1],width:[exData.size*200,0],color:exData.color,dir:0});
        		audioElem['enemy_crash'].load();
        		audioElem['enemy_crash'].play();
        		if(exData.boss) {
@@ -664,6 +672,7 @@ class laserAll extends drawAll {
 		1:出てる←このときだけ判定が働く
 		2:出し終わって消えてる
 		*/
+		if(exData.test) {console.log(tn,touchLs); exData.test = false;}
 		if (tn == 0) {exData.alpha = 0.4};
 		if( tn == 1){
 			/*
