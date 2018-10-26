@@ -14,7 +14,7 @@ function frame (){
 	ctx.fillStyle = theme;
 	ctx.fillText('Score',420,30);
 	ctx.fillText('Life',420,70);
-	ctx.fillText('Bomb',420,115);
+	ctx.fillText('Bomb',420,110);
 	ctx.fillText('Graze',420,150);
 
 	ctx.font = 'italic 15px Courier','15px sans-serif';
@@ -24,7 +24,8 @@ function frame (){
 	player.score_2 += (player.score - player.score_2) / 4;
 	ctx.fillText(keta(Math.ceil(player.score_2),12),420,50);
 	ctx.fillText(player.graze,420,170);
-	for(let i = 0; i<player.hp; i++) playerDraw(430+i*30,90,8,player.anim,1,'#eab500',false);
+	for(let i = 0; i<player.hp; i++) playerDraw(430+i*30,88,7,player.anim,1,'#eab500',false);
+	for(let i = 0; i<player.bombCount; i++) bombCountDraw(430+i*30,123,5,player.anim,1,'#eab500',false);
  	title(515,410,theme);
 	SerifElem.waku_2 += (SerifElem.waku - SerifElem.waku_2)/10;
 	func.draw({alpha:0.7,st:true,circle:false,X:[420,630,630,420],Y:[180,180,SerifElem.waku_2,SerifElem.waku_2],close:true});
