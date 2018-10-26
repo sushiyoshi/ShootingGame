@@ -1,53 +1,170 @@
-let canvas = document.getElementById('stg');
-const ctx = canvas.getContext('2d');
-let bullet = {}; //敵の弾データ
-let address = {}; //弾をグループ化。弾にまとめて命令をだしたいときに使う。いまのところ合図にしか使っていない。
-//アドレスシステムはまた未完成なので、バグが多いかもしれない。
-let effect = {}; //エフェクトデータ
-let laser = {}; //レーザーデータ
-let exData = {}; //展開したデータをここにいれる
-let player = {X:200,Y:400,spX:0,spY:0,shot:0,anim:0,alive:true,ghost:0,hp:5,stageScore:[0,0,0],score:0,score_2:0,graze:0,bomb:0,bombCount:5};
-//X,Y:座標　spX,spY:移動速度 shot:ショット間隔 anim:猫耳ぴょこぴょこ alive:生死　ghost:被弾後の無敵状態 hp:hp score,score_2:スコア graze:グレイズ
-let input_key_buffer = [];//キー入力
-for(let i = 0; i <= 226; i++) input_key_buffer[i] = false;//押してない状態を初期値とする
-let p_bullet = [];//プレイヤーの弾データ
-let enemy = {};//敵データ
-let touchLs;//レーザーの判定
-let touchBul;//弾の判定
-let number = {enemy:0,bullet:0,laser:0,effect:0};//敵、弾、レーザー、エフェクトの総数（削除されたものも含む)
-let deleteAll;//指定された敵idの弾を全削除する　発火の恐れあり。
-let tn = 0;　//exData.typeNumberの値を入れてる。いちいち記述するのが面倒なので
-let theme;//ゲーム全体の色を決める。ステージごとに変わる。
-let bossData = {d1:new Date(),d2:new Date()};//ボス情報表示。
-let stage =	0;//ステージ番号
-let themeList = ['#fff',"#b000a3","#00af00","#39A0DA"];//左からステージ1、ステージ2、ステージ3のテーマ。
-let SerifElem = {num:0,length:1,r:"",max:14,bake:0,waku:320,waku_2:180}
-//num:処理する台詞の要素番号　length:表示する台詞の文字数　r:行分け前の台詞　max:一行に表示できる文字数　bake:文字化け　waku:枠の幅
-let Serif = []//台詞データ
-let SerifResult = [];//採集敵に表示する（行分け後）の台詞
-let audioElem = {
-	bgm:new Audio('sumia.mp3'),
-	enemy_crash:new Audio('audio/magic3.mp3'),
-	enemy_shot:new Audio('audio/damage6.mp3'),
-	crash:new Audio('audio/attack1.mp3'),
-	res:new Audio("audio/tr.mp3"),
-	noise:new Audio("audio/trx01.mp3"),
-	noise2:new Audio("audio/noise03.mp3"),
-	warning:new Audio("audio/warning.mp3"),
-	graze:new Audio("audio/automatic_pencil1.mp3"),
-	address:new Audio("audio/magic_wave3.mp3"),
-	laser:new Audio("audio/laser.mp3"),
-	star_crash:new Audio("audio/sen_fa_maho_kougeki06.mp3"),
-	bomb:new Audio("audio/sen_fa_maho_kougeki05.mp3")
-}//bgm,効果音
-let audioLoading = 0;
-let boss;//ボス真偽
-let tempo = 7;//猫耳ぴょこぴょこの速さ　音楽に合わせて変化させたい
-let bombInfo = {size:0,X:0,Y:0};//未実装ボム
-let bk;　//文字化けテキストを入れる場所　なぜかグローバル変数
-let zone = ['PINKZONE','GREENZONE','BLUEZONE']
-audioElem['crash'].volume = 0.6;
-audioElem['address'].volume = 0.5;
-audioElem['bgm'].volume = 0.6;
-audioElem['enemy_shot'].volume = 0.5;
-audioElem['laser'].volume = 0.5;
+function serifAll() {
+	ctx.textAlign = "start";
+	SerifResult = [];
+	SerifElem.r = "";
+	serifDisplay(SerifElem.num,SerifElem.length-1);
+	lineBreak(SerifElem.r,SerifElem.max);
+
+	let xx = 0;
+	let yy = 0;
+	if(Serif[SerifElem.num]['shake']) {
+		xx = rndm(-3,3);
+		yy = rndm(-3,3);
+	}
+	SerifResult.forEach(function(value,index,array) {
+		//ctx.font = '14px Wawati SC','14px sans-serif';
+		ctx.font = '14px Courier','14px sans-serif';
+		ctx.globalAlpha = 1;
+		ctx.fillStyle = Serif[SerifElem.num]['color'];
+		if(Serif[SerifElem.num]['bake'] && rndm(0,20) == 0) {
+			SerifElem.bake = rndm(3,20);
+			bk = bake(value.length);
+		}
+		SerifElem.bake--;
+		SerifElem.bake > 0 ? ctx.fillText(bk,428+xx,200+index*20+yy) : ctx.fillText(value,428+xx,200+index*20+yy);
+		if(Serif[SerifElem.num]['shake']) {
+			xx = rndm(-3,3);
+			ctx.globalAlpha = 0.7;
+			yy = rndm(-8,8);
+			ctx.fillText(value,428+xx,200+index*20+yy);
+		}
+	});
+	if(!(SerifElem.bake > 0 && rndm(0,10) == 0)){
+		wireless(440,285,Math.floor(SerifElem.length % 8 / 4));
+	}
+
+}
+function isHanEisu(str) {
+	str = (str==null)?"":str;
+	if(str.match(/^[a-z0-9]*$/))
+		return true;
+	else
+		return false;
+}
+async function SerifSet(sec = 0) {
+	await sleepByPromise(sec);
+	audioElem['noise'].play();
+	SerifElem.num++;
+	SerifElem.length = 1;
+	let l = Serif[SerifElem.num]['str'].length;
+	let s = Serif[SerifElem.num]['speed'];
+	for(let a = 0; a < l; a++) {feed(a*s,'length',SerifElem);}
+	SerifElem.num < Serif.length && SerifSet(Serif[SerifElem.num]['wait']);
+}
+
+function serifData(p) {
+	SerifElem = {num:-1,length:1,r:"",max:14,bake:0,waku:320,waku_2:180};
+	Serif = [];
+	switch(p) {
+		case 1:
+		addSerif({str:"・・・さてと通信は繋がったかな。",wait:3,speed:0.05});
+		addSerif({str:"こちらアンドウ、アンドウ、応答せよ。",wait:3,speed:0.03});
+		addSerif({str:"...よし、応答があった。",wait:2,speed:0.03});
+		addSerif({str:"AIナンバー010君。/さっそくですまないが、君に新種のコンピュータウイルスWin killer meの駆除を頼みたい。",wait:6,speed:0.02});
+		addSerif({str:"君の持っているワクチンバスターでウイルスを無力化するのは可能だが、",wait:5,speed:0.02});
+		addSerif({str:"相手の能力が未知数なうえに、急造品のためバスターの出力が弱い。",wait:5,speed:0.02});
+		addSerif({str:"君自身がウイルスに感染しないよう気をつけてくれ。",wait:4,speed:0.02});
+		addSerif({str:"では健闘を祈る。",wait:3,speed:0.02});
+		break;
+		case 'boss1':
+		addSerif({str:"このあたりは特にウイルスの反応が高い。十分に注",wait:1.15,speed:0.05});
+		addSerif({str:bake(12),wait:0.3,speed:0.01,shake:true});
+		addSerif({str:"ど、どうした。応答してくれ",wait:1,speed:0.01,shake:true});
+		addSerif({str:"接続がタイムアウトになりました。",wait:2,speed:0.02,shake:true,color:'#00ff00',bake:true});
+		addSerif({str:"直ちに敵の情報をスキャンします。",wait:2,speed:0.02,shake:true,color:'#00ff00',bake:true});
+		break;
+		case 2:
+		addSerif({str:"ネットワークが回復しました。",wait:1,speed:0.02,color:'#00ff00'});
+		addSerif({str:"...大丈夫か？",wait:0.5,speed:0.01});
+		addSerif({str:"得に異常はなさそうだな。",wait:1,speed:0.03});
+		addSerif({str:"ネットワークにウイルスが侵入するとは私が考えていたよりウイルスの影響を受けていたようだな。",wait:6,speed:0.02});
+		addSerif({str:"新しい武器と回線の耐ウイルスプログラムを送る。",wait:6,speed:0.02});
+		addSerif({str:"少しでも役に立ててくれ。",wait:3,speed:0.02});
+		addSerif({str:"兵装「ワクチンデストロイヤー」プログラムをインストールしました。",wait:4,speed:0.02,color:'#00ff00'});
+		break;
+		case 'boss2':
+		addSerif({str:"非常に高いウイルス反応がある。",wait:2,speed:0.03});
+		addSerif({str:"さっきのものと少し似ているが微妙に違う。",wait:2,speed:0.03});
+		addSerif({str:"おそらく前回戦った時の敵よりも能力が高い個体だ。",wait:2,speed:0.03});
+		addSerif({str:"十分に気をつけてくれ。",wait:2,speed:0.03});
+		break;
+		case 3:
+		addSerif({str:"ここはウイルスの汚染濃度が高い。",wait:3,shake:true,speed:0.03});
+		addSerif({str:"おそらく通信できるのもここまでだろう。",wait:3,speed:0.03,bake:true,shake:true});
+		addSerif({str:"ここからはサポートできなくなると思うが。",wait:3,speed:0.03,bake:true,shake:true});
+		addSerif({str:"ここまでいけた君ならできるはずだ。",wait:3,speed:0.03,bake:true,shake:true});
+		addSerif({str:"健闘を祈る。",wait:0.5,speed:0.03,bake:true,shake:true});
+		addSerif({str:bake(12),wait:1,speed:0.01,bake:true,shake:true});
+		addSerif({str:"接続がタイムアウトになりました。",wait:5,speed:0.02,color:'#00ff00'});
+		break;
+		case 'end':
+		addSerif({str:"ウイルス検査中...",wait:4,speed:0.03,color:'#00ff00'});
+		addSerif({str:"ウイルス反応消失",wait:1,speed:0.03,color:'#00ff00'});
+		addSerif({str:"マザーウイルス Win killer meの駆除を確認",wait:2,speed:0.03,color:'#00ff00'});
+		addSerif({str:"AIプログラムをウイルスソフトにスキャンします...",wait:3,speed:0.03,color:'#00ff00'});
+		addSerif({str:"AIプログラムに異常は見つかりませんでした。",wait:4,speed:0.03,color:'#00ff00'});
+		addSerif({str:"どうやら異常はないみたいだ。",wait:3,speed:0.03});
+		addSerif({str:"急造品の武器だけで決行した無茶な作戦だったが、よくここまで戦ってくれた。",wait:3,speed:0.03});
+		addSerif({str:"これでウイルスの脅威も去った。",wait:3,speed:0.03});
+		addSerif({str:"これから君の回収に入る。",wait:3,speed:0.03});
+		addSerif({str:"お疲れ様。",wait:3,speed:0.03});
+		break;
+
+	}
+	SerifSet();
+}
+function lineBreak(str,max) {
+	let l = str.length;
+	let b = 0;
+	let ii = 0;
+	SerifResult[0] = "";
+	for(let i = 1; i <= l; i++) {
+ 		isHanEisu(str[i-1]) ? ii+=0.5 : ii++;
+		str[i-1] != "/" && (SerifResult[b] += str[i-1]);
+		if(Math.floor(ii) == max || str[i-1] == "/"){ii = 0;b++; SerifResult[b] = ""}
+	}
+}
+function addSerif(obj) {
+	obj['shake'] === undefined && (obj['shake'] = false);
+	obj['color'] === undefined && (obj['color'] = '#fff');
+	//obj['color'] === undefined && (obj['color'] = '#eab500');
+	obj['shake'] === undefined && (obj['shake'] = false);
+	Serif.push(obj);
+}
+
+function bake(length) {
+	let s = "";
+	let c = ['樺','・','ェ','霊','-','喧','∆','代','ｯ','ﾕ','→','励','被','ｨ','ｩ','繕','√','w','徐','惑','ｱ','譁','ｭ','怜','縺','縺','縲','枚','蟄','繝','峨'];
+	for(let i = 0; i < length; i++) {
+		s += c[rndm(0,c.length-1)];
+	}
+	return s;
+}
+function serifDisplay(n,l) {
+	for(let i = 0; i < l; i++) SerifElem.r += Serif[n]['str'][i];
+}
+async function feed(sec = 0,pr,obj) {
+	await sleepByPromise(sec);
+	obj[pr]++;
+}
+function wireless(x,y,anim){
+	func.draw({st:true,circle:false,X:[x-10,x+10,x+10,x-10],Y:[y+35,y+35,y-10,y-10],close:true});
+	func.draw({st:true,circle:false,X:[x-8,x+8,x+8,x-8],Y:[y+25+anim*3,y+25+anim*3,y+15-anim*5,y+15-anim*5],close:true});
+	func.draw({st:true,circle:false,X:[x-8,x+8,x+8,x-8],Y:[y+3,y+3,y-5,y-5],close:true});
+
+	func.draw({st:true,circle:false,X:[x-10,x-5],Y:[y+25+anim*3,y+15-anim*5]});
+	func.draw({st:true,circle:false,X:[x-5,x],Y:[y+25+anim*3,y+15-anim*5]});
+	func.draw({st:true,circle:false,X:[x+5,x+10],Y:[y+25+anim*3,y+15-anim*5]});
+	func.draw({st:true,circle:false,X:[x,x+5],Y:[y+25+anim*3,y+15-anim*5]});
+
+	func.draw({st:true,circle:false,X:[x-5,x-5],Y:[y-10,y-25]});
+
+	func.draw({st_style:'#eab500',st:true,circle:false,X:[x-6+anim*2,x-4+anim*2,x-2+anim*2],Y:[y+1,y-1,y+1],close:true});
+
+	func.draw({fil_style:'#eab500',fil:true,X:x-5,Y:y-25,siz:3});
+/*
+	func.draw({st:true,circle:false,X:[x+10,x+5],Y:[y+25+anim*5,y+15-anim*5]});
+	func.draw({st:true,circle:false,X:[x+5,x],Y:[y+25+anim*5,y+15-anim*5]});
+	func.draw({st:true,circle:false,X:[x,x-5],Y:[y+25+anim*5,y+15-anim*5]});
+	func.draw({st:true,circle:false,X:[x-5,x-10],Y:[y+25+anim*5,y+15-anim*5]});*/
+}
