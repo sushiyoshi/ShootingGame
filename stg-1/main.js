@@ -1,9 +1,13 @@
+function gameSetup() {
+	func.addEffect({costume:'title',alpha:[1,0],changeCond:[{cond:6},{cond:2,down:0}],X:200,Y:150});
+}
+gameSetup();
 async function stageConst(sec) {
 	await sleepByPromise(sec);
 	stage++;
 	serifData(stage);
 	boss = 0;
-	theme = themeList[stage-1];
+	theme = themeList[stage];
 	enAll.theme(theme);
 	en_btAll.theme(theme);
 	lsrAll.theme(theme);
@@ -11,7 +15,7 @@ async function stageConst(sec) {
 	//func.addEffect({X:200,Y:150,speed:2,accele:-4,dir:270,alpha:[1,1,1],costume:'text',color:'#fff',text:'No Bonus...',algin:"center",font:'30px Courier',changeCond:[{cond:4,y:100,speed:0,accele:0},{cond:2,down:600,speed:1,accele:4},{cond:0}]});
 	//func.addEffect({color:'#fff',X:0,Y:200,speed:8,dir:0,costume:'text',text:`stage${stage}`,font:'50px Courier',changeCond:[{cond:4,x:120,speed:0.5},{cond:4,x:180,speed:8},{cond:0}] });
 	func.addEffect({dir_accele:-5,dir_accele_2:1,interval:[[50,0],[50,-2],[1,0]],algin:"center",color:'#fff',X:160,Y:200,tdir:0,costume:'text',bake:1,text:`STAGE${stage}`,font:'50px Courier',ch_speed:15,alpha:[1,1,0],changeCond:[{cond:2,down:30,dir_accele:0,dir_accele_2:0},{cond:2,down:100},{cond:2,down:100}] });
-	func.addEffect({interval:[[50,0],[50,0],[50,-2],[1,0]],algin:"center",X:320,Y:180,tdir:0,costume:'text',bake:1,text:zone[stage-1],font:'25px Courier',ch_speed:15,alpha:[0,1,1,0],changeCond:[{cond:2,down:30,dir_accele:5,dir_accele_2:-1},{cond:2,down:30,dir_accele:0,dir_accele_2:0},{cond:2,down:70},{cond:2,down:100}] });
+	func.addEffect({interval:[[50,0],[50,0],[50,-2],[1,0]],algin:"center",X:320,Y:160,tdir:0,costume:'text',bake:1,text:zone[stage-1],font:'25px Courier',ch_speed:15,alpha:[0,1,1,0],changeCond:[{cond:2,down:30,dir_accele:5,dir_accele_2:-1},{cond:2,down:30,dir_accele:0,dir_accele_2:0},{cond:2,down:70},{cond:2,down:100}] });
 	game(stage,3);
 }
 
@@ -46,7 +50,9 @@ var en_btAll = new en_bulletAll(bullet,{
 	effect:[0,0],
 	deleteMessage:false,
 	graze:true,
-	deru:true
+	deru:true,
+	size_accele:0,
+	dir_accele_2:0
 });
 var enAll = new enemyAll(enemy,{
 	dir:90, //向き
@@ -66,7 +72,10 @@ var enAll = new enemyAll(enemy,{
 	score:100000,
 	changeCond:[{cond:0}],
 	boss:false,
-	audio:true
+	audio:true,
+	size_hp:false,
+	size_accele:0,
+	dir_accele_2:0
 })
 var lsrAll = new laserAll(laser,{
 	dir:0,
@@ -85,7 +94,9 @@ var lsrAll = new laserAll(laser,{
 	changeCond:[{cond:2,down:100},{cond:2,down:100},{cond:2,down:10}],
 	deleteMessage:false,
 	graze:true,
-	shot:true
+	shot:true,
+	size_accele:0,
+	dir_accele_2:0
 })
 var effAll = new effectAll(effect,{
 	dir:0,
@@ -107,10 +118,10 @@ var effAll = new effectAll(effect,{
 	typeNumber:0,
 	ch_speed:6,
 	tdir:0,
+	size_accele:0,
 	algin:'start',
 	changeCond:[{cond:2,down:1},{cond:2,down:50}]
 })
-stageConst();
 var all = function() {
 	input_key_buffer[79] && input_key_buffer[80] && input_key_buffer[83] && input_key_buffer[84] && sleep(10000);
 	if(canvas.getContext) {
@@ -156,9 +167,23 @@ const isCrossLines = (a, b, c, d) => {
     return stack[0] * stack[1] < 0 && stack[2] * stack[3] < 0;
 };
 function backgroundDraw() {
-	if(rndm(0,10) == 0 && !boss) {
-		console.log('aa');
+	if(rndm(0,15) == 0 && !boss) {
 		const circleSize = rndm(2,4);
 		func.addEffect({changeCond:[{cond:0}],costume:'circle_2',X:rndm(15,395),Y:0,size:[circleSize],speed:circleSize*1,color:'#fff',alpha:[0.6],dir:90});
 	}
+}
+function GameEnd() {
+	del();
+	boss = false;
+	player.hp <= 0 && (player.hp = 0);
+	let record = bossData.TargetTime < bossTime() ? bossData.TargetTime : bossTime();
+	let bonus = player.hp*(player.graze+Math.floor(bossData.TargetTime-record)*5)*100000;
+	player.stageScore[stage-1] += bonus;
+	func.addEffect({X:200,Y:150,dir:270,alpha:[0,1,1,0],costume:'text',color:'#fff',text:`Interval score:${player['stageScore'][stage-1]}`,algin:"center",font:'25px Courier',color:'#eab500',changeCond:[{cond:2,down:1,speed:2,accele:-4},{cond:4,y:100,speed:0,accele:0},{cond:2,down:350,speed:1,accele:4},{cond:0}]});
+	func.addEffect({X:200,Y:175,dir:270,alpha:[0,1,1,0],costume:'text',text:player.hp > 0 ? `Boss Breaking Bonus +${bonus}` : 'No Bonus...',algin:"center",font:'22px Courier',changeCond:[{cond:2,down:20,speed:2,accele:-4},{cond:4,y:125,speed:0,accele:0},{cond:2,down:330,speed:1,accele:4},{cond:0}]});
+	func.addEffect({X:200,Y:200,dir:270,alpha:[0,1,1,0],costume:'text',color:'#fff',text:`graze:${player.graze}`,algin:"center",font:'20px Courier',changeCond:[{cond:2,down:40,speed:2,accele:-4},{cond:4,y:150,speed:0,accele:0},{cond:2,down:310,speed:1,accele:4},{cond:0}]});
+	func.addEffect({X:200,Y:225,dir:270,alpha:[0,1,1,0],costume:'text',color:'#fff',text:`BossBreakingTime:${record}`,algin:"center",font:'20px Courier',changeCond:[{cond:2,down:40,speed:2,accele:-4},{cond:4,y:175,speed:0,accele:0},{cond:2,down:310,speed:1,accele:4},{cond:0}]});
+	player.graze = 0;
+	player.hp = 5;
+	serifData('end');
 }
