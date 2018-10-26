@@ -12,7 +12,7 @@ function playerAll() {
 	    player.Y += player.spY;
 	    player.X > 400 && (player.X = 400);
 	    player.X < 20 && (player.X = 20);
-	    player.Y < 20 && (player.pY = 20);
+	    player.Y < 20 && (player.Y = 20);
 	    player.Y > 460 && (player.Y = 460);
 	    player.shot--;
 	    player.bomb--;
@@ -80,6 +80,8 @@ function playerDraw(x,y,size,anim,alpha,cl='#eab500',circle = false) {
 
 }
 function bombAdd(x,y) {
+	audioElem['bomb'].load();
+	audioElem['bomb'].play();
 	player.stageScore[stage-1] += 50000;
 	func.addEffect({ch_speed:20,color:'#fff',costume:'bomb',dir_accele:5,X:x,Y:y,size:[200,500],width:[5,5],alpha:[0,1],changeCond:[{cond:2,down:200},{cond:2,down:40}]})
 }
