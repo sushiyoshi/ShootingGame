@@ -30,18 +30,6 @@ class Func {
 					case 'rndm':
 					r = rndm(Number(result[1]),Number(result[2]));
 					break;
-					case 'mcos':
-					result[1] = Number(result[1])+5;
-					result[1] = keta(result[1],3);
-					obj[pr] = obj[pr].replace(/-?\d{3},/,result[1] + ',');
-					r = Math.cos(this.rad(Number(result[1])))*Number(result[2])
-					break;
-					case 'msin':
-					result[1] = Number(result[1])+5;
-					result[1] = keta(result[1],3);
-					obj[pr] = obj[pr].replace(/-?\d{3},/,result[1] + ',');
-					r = Math.sin(this.rad(Number(result[1])))*Number(result[2])
-					break;
 					case 'madd':
 					r = exData[pr] + Number(result[1]);
 					break;
@@ -56,6 +44,24 @@ class Func {
 			} else if(obj[pr].match(/^#[a-z0-9]{6},#[a-z0-9]{6}$/)) {
 				r = exData.bulletNumber % 2 == 0 ? result[0] : result[1];
 				return r;
+			} else if(obj[pr].match(/^\w{4},-?\d{3},-?\d{3},-?\d{3}$/)) {
+				switch(result[0]) {
+					case 'mcos':
+					result[1] = Number(result[1])+Number(result[3]);
+					if(result[1] >= 1000 || result[1] <= -1000) result[1] = 0;
+					result[1] = result[1] > 0 ? keta(result[1],3) : '-' + keta(Math.abs(result[1]),3);
+					obj[pr] = obj[pr].replace(/-?\d{3},/,result[1] + ',');
+					r = Math.cos( this.rad( Number(result[1]) ) )*Number(result[2]);
+
+					break;
+					case 'msin':
+					result[1] = Number(result[1])+Number(result[3]);
+					result[1] = keta(result[1],3);
+					obj[pr] = obj[pr].replace(/-?\d{3},/,result[1] + ',');
+					r = Math.sin(this.rad(Number(result[1])))*Number(result[2])
+					break;
+				}
+				return r;
 			}
 		}
 		return obj[pr];
@@ -63,8 +69,10 @@ class Func {
 	//オブジェクトのプロパティ更新
 	PrptUpdate () {
 		exData.speed +=  exData.accele / 100;
-	    exData.dir +=  exData.dir_accele /5;
+	    exData.dir += this.RgEp(exData,'dir_accele') /5;
 		exData.interval[tn][0]--;
+		exData.size +=  exData.size_accele/10;
+		if(typeof exData.dir_accele !== 'string' ) exData.dir_accele += exData.dir_accele_2/5;
 	}
 	//移動
 	move(dis,di,object) {
@@ -219,10 +227,10 @@ class Func {
 	 		break;
 			//レーザー
 	 		case 'laser':
-	 		//touchLs = this.dis_laser(player.X,player.Y,X,Y,X + Math.cos(this.rad(di))*400,Y + Math.sin(this.rad(di))*400) < wid*1.5;
-	 		touchLs = isCrossLines({x:X,y:Y},{x:X + Math.cos(this.rad(di))*400,y:Y + Math.sin(this.rad(di))*400},{x:player.X+player.spX/2,y:player.Y+player.spY/2},{x:player.X-player.spX/2,y:player.Y-player.spY/2});
+	 		//touchLs = this.dis_laser(player.X+,player.Y,X,Y,X + Math.cos(this.rad(di))*400,Y + Math.sin(this.rad(di))*400) < wid*1.5;
+	 		touchLs = isCrossLines({x:X,y:Y},{x:X + Math.cos(this.rad(di))*400,y:Y + Math.sin(this.rad(di))*400},{x:player.X+player.spX/2+1,y:player.Y+player.spY/2+1},{x:player.X-player.spX/2-1,y:player.Y-player.spY/2-1});
 	 		tn == 1 && this.graze(this.dis_laser(player.X,player.Y,X,Y,X + Math.cos(this.rad(di))*400,Y + Math.sin(this.rad(di))*400) < wid*1.5 && this.dis_laser(player.X,player.Y,X,Y,X + Math.cos(this.rad(di))*400,Y + Math.sin(this.rad(di))*400) < wid*20,false);
-	 		if(touchLs ) {console.log(tn); exData.test = true;}
+	 		if(touchLs ) { exData.test = true;}
 	 		circle && this.draw({fil:true,alpha:alpha,siz:5});
 	 		circle && (tn == 1 ? this.draw({st:true,siz:wid,st_style:cl,wid:wid/1.8,alpha:0.5}) : this.draw({st:true,siz:wid,st_style:cl,wid:wid/1.8,alpha:alpha}))
 			ctx.beginPath();
@@ -268,8 +276,8 @@ class Func {
 			this.draw({alpha:alpha,wid:siz*3.6,fil_style:'#000000',siz:siz*3,st:true,fil:true,X:X,Y:Y});
 			break;
 			case 'enemy_5':
-			this.draw({siz:siz*7+1+Math.cos(this.rad(di*5))*1.5,st_style:cl,st:true,wid:siz*1.5});
-			this.draw({alpha:alpha,wid:siz*2,fil_style:'#000',fil:true,st:true,siz:siz*2.5});
+			this.draw({X:X,Y:Y,siz:siz*7+1+Math.cos(this.rad(di*5))*1.5,st_style:cl,st:true,wid:siz*1.5,alpha:alpha});
+			this.draw({X:X,Y:Y,alpha:alpha,wid:siz*2,fil_style:'#000',fil:true,st:true,siz:siz*2.5});
 			break;
 			//2面ボス
 			case 'star_boss':
@@ -342,6 +350,15 @@ class Func {
 			exData.bake > 0 ?  ctx.fillText(bake(exData.text.length),X,Y) : ctx.fillText(exData.text,X,Y);
 			ctx.rotate(this.rad(exData.tdir*-1));
 			break;
+			case 'title':
+			if(rndm(0,10) != 0) {
+				ctx.font = '13px Courier'
+				ctx.textAlign =  'center';
+				ctx.globalAlpha = alpha;
+				ctx.lineWidth = wid;
+				ctx.fillStyle = cl;
+				ctx.fillText('PRESS THE Z KEY',X,Y)
+			}
 	 	}
 		//細長い弾。costumeに数字が入れられている時はこちらとみなす。数字がでかいほど弾は細長くなる。
 	 	if(typeof ty == 'number') {
@@ -392,6 +409,11 @@ class Func {
 			//所持しているアドレスの値が0より小さくなったら
 			case 5:
 			return address[exData.ad] < 0;
+			case 6:
+			return input_key_buffer[90];
+			break;
+			case 7:
+			return Math.abs(exData.size - object.size) < 2;
 			//枠の外側に出たら
 			default:
 			return exData.X > 410 || exData.X < 0 || exData.Y < 0 || exData.Y > canvas.height;
@@ -435,7 +457,7 @@ class Func {
 			object.reverse *= -1;
 			object.laser ? object['changeCond'][0]['dir_accele'] = object.reverse : object.dir_accele = object.reverse;
 		}
-		exData.bulletNumber % object.cycle == 0 && this.add({changeCond:object['changeCond'],chase:object['chase'],deleteMessage:object['deleteMessage'],enId:object['enId'],color:this.RgEp(object,'color'), speed:object['speed'],accele:object['accele'], dir_accele:this.RgEp(object,'dir_accele'), interval:object['interval'], size:object['size'], type:object['type'], costume:object['costume'], bulletNumber:exData.bulletNumber, Addval:object['Addval'],width:object['width'],X:object['X'],Y:object['Y'],dir_2:object['dir_2'],st_dir:this.RgEp(object,'st_dir')}, object['count'], object['rota'],object['laser'],object['shift']);
+		exData.bulletNumber % object.cycle == 0 && this.add({size_hp:object['size_hp'],deru:object['deru'],changeCond:object['changeCond'],chase:object['chase'],deleteMessage:object['deleteMessage'],enId:object['enId'],color:this.RgEp(object,'color'), speed:this.RgEp(object,'speed'),accele:object['accele'], dir_accele:this.RgEp(object,'dir_accele'), interval:object['interval'], size:this.RgEp(object,'size'), type:object['type'], costume:object['costume'], bulletNumber:exData.bulletNumber, Addval:object['Addval'],width:object['width'],X:object['X'],Y:object['Y'],dir_2:object['dir_2'],st_dir:this.RgEp(object,'st_dir')}, object['count'], object['rota'],object['laser'],object['shift']);
 	}
 	delete(array,index) {}
 	constant() {}
@@ -496,6 +518,7 @@ class drawAll extends Func {
        		exData['changeCond'][tn]['costume'] !== undefined && (exData.costume = exData['changeCond'][tn]['costume']);
        		exData['changeCond'][tn]['dir_accele'] !== undefined && (exData.dir_accele = exData['changeCond'][tn]['dir_accele']);
        		exData['changeCond'][tn]['dir_accele_2'] !== undefined && (exData.dir_accele_2 = exData['changeCond'][tn]['dir_accele_2']);
+       		exData['changeCond'][tn]['size_hp'] !== undefined && (exData.size_hp = exData['changeCond'][tn]['size_hp']);
        		exData['changeCond'][tn]['delAll'] && (deleteAll = exData.enId);
        		//最後の条件となったら削除リストに追加
        		exData['changeCond'][tn+1] === undefined ? deletelist.push(value) : tn++;
@@ -596,7 +619,7 @@ class en_bulletAll extends drawAll {
 					//敵のIDを渡してる
 					let result = exData.enId.split(/-/);
 					exData.enId =`${result[0]}-${Number(result[1])+10}`;
-					this.add({deleteMessage:true,bulletNumber:exData.bulletNumber,X:exData.X,Y:exData.Y,st_dir:rndm(0,360),color:themeList[rndm(0,3)],deleteMessage:true,costume:'star_bullet',size:exData.size-2,count:1,Addval:100,enId:exData.enId,speed:1,accele:3,type:[0,3,4],changeCond:[{cond:2,down:20},{cond:0},{cond:2,down:100}],interval:[[0,0],[10,20],[1,100]]},1,0);
+					this.add({deleteMessage:true,bulletNumber:exData.bulletNumber,X:exData.X,Y:exData.Y,st_dir:rndm(0,360),color:themeList[rndm(1,3)],deleteMessage:true,costume:'star_bullet',size:exData.size-2,count:1,Addval:100,enId:exData.enId,speed:1,accele:3,type:[0,3,4],changeCond:[{cond:2,down:20},{cond:0},{cond:2,down:100}],interval:[[0,0],[10,20],[1,100]]},1,0);
 				}
 
 			}
@@ -627,6 +650,9 @@ class enemyAll extends drawAll {
 			bossData.hp = exData.hp;
 			bossData.dir = exData.edir;
 		}
+		if(exData.size_hp) {
+			exData.size = exData.hp/20 + 1;
+		}
 	}
 	dr() {
 		super.PrptUpdate();
@@ -644,7 +670,7 @@ class enemyAll extends drawAll {
        		audioElem['enemy_crash'].load();
        		audioElem['enemy_crash'].play();
        		if(exData.boss) {
-       			StageEnd();
+       			stage != 3 ? StageEnd() : GameEnd();
        			this.addEffect({costume:'circle',X:exData.X,Y:exData.Y,size:[1,exData.size*50],width:[exData.size*500,0],color:exData.color,dir:exData.edir});
        			this.addEffect({costume:'circle',X:exData.X,Y:exData.Y,size:[1,exData.size*100],width:[exData.size*1000,0],color:exData.color,dir:0});
        		}
@@ -672,7 +698,7 @@ class laserAll extends drawAll {
 		1:出てる←このときだけ判定が働く
 		2:出し終わって消えてる
 		*/
-		if(exData.test) {console.log(tn,touchLs); exData.test = false;}
+		if(exData.test) {exData.test = false;}
 		if (tn == 0) {exData.alpha = 0.4};
 		if( tn == 1){
 			/*
@@ -694,7 +720,10 @@ class laserAll extends drawAll {
 		exData.width_2[0] = exData.width[tn] - exData.width_2[1];
 		exData.width_2[1] += exData.width_2[0]/5;
 		exData.dir += exData.dir_accele/5;
-		//exData.dir_accele += exData.dir_accele_2[tn];
+		exData.dir_accele += exData.dir_accele_2/5;
+		if(exData.dir_accele >= 5) {
+			exData.dir_accele = 5;
+		}
 	}
 	dr() {
 		this.PrptUpdate();
@@ -737,6 +766,11 @@ class effectAll extends drawAll {
 				if(exData.bake <= 0 && rndm(0,exData.interval[tn][0]) == 0) {
 					exData.bake = rndm(1,5);
 				}
+			}
+			break;
+			case 'title':
+			if(tn == 1) {
+				stageConst();
 			}
 			break;
 
