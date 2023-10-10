@@ -6,6 +6,9 @@
 ### 操作方法
 十字キーで移動（shiftキーを押しながらだと低速）、zキーでショット、xキーでボム
 
+### ブラウザ版リンク
+https://sushiyoshi.github.io/ShootingGame/stg-1/index.html
+
 ### 協力してくださった方々・サイト様:
 
 |Title|Description|
